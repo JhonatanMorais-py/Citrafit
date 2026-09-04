@@ -1,0 +1,13 @@
+{
+  "name": "citrafit-run-life",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:backend": "node --check backend/config/env.js && node --check backend/config/supabase.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "dotenv": "^17.2.2"
+  }
+}
