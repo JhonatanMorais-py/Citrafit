@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b0d0f" />
+  <title>RUN/LIFE — Protótipo Front-end</title>
+  <style>
+    :root{
+      --bg:#f4f5f2;
+      --surface:#ffffff;
+      --surface-2:#eef0ec;
+      --ink:#101312;
+      --muted:#66706a;
+      --line:#dfe4df;
+      --accent:#b9ff3b;
+      --accent-ink:#152000;
+      --dark:#0b0d0f;
+      --danger:#ff6b6b;
+      --radius:24px;
+      --shadow:0 14px 40px rgba(20,25,22,.10);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+
+    .hidden{display:none !important}
+    .app-shell{min-height:100vh}
+
+    /* LOGIN */
+    .login-screen{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at 80% 15%, rgba(185,255,59,.25), transparent 25%),
+        radial-gradient(circle at 10% 90%, rgba(185,255,59,.12), transparent 20%),
+        #0b0d0f;
+      padding:24px;
+    }
+    .login-wrap{
+      width:min(1100px,100%);
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:18px;
+    }
+    .login-brand{
+      min-height:610px;
+      padding:42px;
+      border-radius:34px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.05), rgba(255,255,255,.01)),
+        #111512;
+      color:white;
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .brand-mark{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:-1.5px;
+      font-size:24px;
+    }
+    .brand-dot{
+      width:14px;height:14px;border-radius:50%;background:var(--accent);
+      box-shadow:0 0 0 6px rgba(185,255,59,.12);
+    }
+    .hero-word{
+      font-size:clamp(52px,7vw,92px);
+      line-height:.9;
+      letter-spacing:-5px;
+      margin:90px 0 22px;
+      max-width:760px;
+    }
+    .hero-word em{font-style:normal;color:var(--accent)}
+    .hero-sub{
+      max-width:560px;
+      font-size:18px;
+      line-height:1.55;
+      color:#c8cec9;
+    }
+    .orb{
+      position:absolute;
+      width:350px;height:350px;border-radius:50%;
+      right:-120px;bottom:-120px;
+      border:52px solid rgba(185,255,59,.12);
+    }
+    .login-card{
+      padding:34px;
+      border-radius:34px;
+      background:white;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      box-shadow:var(--shadow);
+    }
+    .login-card h2{font-size:32px;letter-spacing:-1.5px;margin:0 0 8px}
+    .login-card p{color:var(--muted);margin:0 0 28px}
+    .field{display:grid;gap:8px;margin-bottom:14px}
+    .field label{font-size:13px;font-weight:700;color:#4d5751}
+    .field input,.field select,.field textarea{
+      width:100%;
+      border:1px solid var(--line);
+      background:#fafbfa;
+      border-radius:15px;
+      padding:14px 15px;
+      outline:none;
+      transition:.2s;
+      color:var(--ink);
+    }
+    .field input:focus,.field select:focus,.field textarea:focus{
+      border-color:#9acb37;
+      box-shadow:0 0 0 4px rgba(185,255,59,.16)
+    }
+    .primary{
+      border:none;border-radius:16px;padding:14px 18px;
+      background:var(--dark);color:white;font-weight:800;
+      display:inline-flex;align-items:center;justify-content:center;gap:9px;
+      transition:.2s;
+    }
+    .primary:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+    .primary.accent{background:var(--accent);color:var(--accent-ink)}
+    .secondary{
+      border:1px solid var(--line);
+      background:white;color:var(--ink);
+      border-radius:14px;padding:12px 15px;font-weight:750;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .login-demo{
+      margin-top:16px;padding:14px;border-radius:15px;background:#f4f7ef;color:#526149;
+      font-size:13px;line-height:1.45;
+    }
+
+    /* APP LAYOUT */
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;width:250px;
+      background:var(--dark);color:white;
+      padding:26px 18px 22px;
+      z-index:40;
+      display:flex;flex-direction:column;
+    }
+    .sidebar .brand-mark{padding:0 10px 24px}
+    .nav{display:grid;gap:6px}
+    .nav-btn{
+      width:100%;border:none;background:transparent;color:#aeb6b0;
+      padding:13px 14px;border-radius:14px;
+      display:flex;align-items:center;gap:12px;text-align:left;
+      font-weight:700;
+    }
+    .nav-btn svg{width:19px;height:19px}
+    .nav-btn:hover{background:#171c18;color:white}
+    .nav-btn.active{background:var(--accent);color:#182000}
+    .sidebar-bottom{margin-top:auto}
+    .mini-profile{
+      border-top:1px solid rgba(255,255,255,.08);
+      padding:18px 8px 0;
+      display:flex;align-items:center;gap:12px;
+    }
+    .avatar{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;font-weight:900;
+      background:linear-gradient(135deg,var(--accent),#efffd0);color:#182000;
+    }
+    .mini-profile small{display:block;color:#89928b;margin-top:2px}
+    .main{
+      margin-left:250px;
+      min-height:100vh;
+      padding:24px 26px 110px;
+      max-width:1600px;
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:18px;margin-bottom:24px;
+    }
+    .topbar h1{margin:0;font-size:28px;letter-spacing:-1.2px}
+    .topbar p{margin:5px 0 0;color:var(--muted)}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    .icon-btn{
+      width:44px;height:44px;border:1px solid var(--line);background:white;
+      border-radius:14px;display:grid;place-items:center;position:relative;
+    }
+    .ping{
+      width:8px;height:8px;background:var(--danger);border-radius:50%;
+      position:absolute;right:9px;top:8px;border:2px solid white;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:1.2fr .8fr}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:0 4px 18px rgba(26,31,28,.03);
+    }
+    .card.dark{background:var(--dark);color:white;border-color:#171a18}
+    .card.accent{background:var(--accent);border-color:transparent}
+    .card h3{margin:0 0 6px;letter-spacing:-.6px}
+    .muted{color:var(--muted)}
+    .dark .muted{color:#9da49f}
+    .eyebrow{
+      font-size:12px;text-transform:uppercase;letter-spacing:1.4px;
+      font-weight:900;color:#758079;
+    }
+    .dark .eyebrow{color:#8e9790}
+    .metric{font-size:36px;font-weight:950;letter-spacing:-2px;margin-top:12px}
+    .metric small{font-size:13px;font-weight:750;letter-spacing:0;color:var(--muted)}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      border-radius:999px;padding:7px 10px;background:var(--surface-2);
+      font-size:12px;font-weight:800;color:#4f5b53
+    }
+    .dark .chip{background:#202620;color:#d8ded9}
+    .progress{
+      height:12px;border-radius:999px;background:#e6eae5;overflow:hidden;
+      margin:10px 0;
+    }
+    .progress > span{display:block;height:100%;background:var(--accent);border-radius:inherit}
+    .progress.dark-track{background:#222823}
+    .workout-hero{
+      display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;
+      min-height:250px;
+      background:
+        radial-gradient(circle at 80% 25%, rgba(185,255,59,.22), transparent 24%),
+        linear-gradient(135deg,#0b0d0f,#141914);
+      color:white;
+    }
+    .workout-hero h2{
+      font-size:42px;line-height:1;letter-spacing:-2px;margin:10px 0 14px;
+      max-width:620px;
+    }
+    .run-badge{
+      width:130px;height:130px;border-radius:50%;
+      display:grid;place-items:center;
+      background:var(--accent);color:#101a00;
+      font-size:28px;font-weight:950;transform:rotate(-7deg);
+      box-shadow:0 0 0 12px rgba(185,255,59,.08);
+    }
+
+    .timeline{display:grid;gap:10px;margin-top:14px}
+    .timeline-item{
+      display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;
+      padding:13px;border-radius:16px;background:#f6f7f5;
+    }
+    .timeline-item.done{background:#eff7e4}
+    .step{
+      width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+      font-weight:900;background:white;border:1px solid var(--line)
+    }
+    .done .step{background:var(--accent);border:none}
+
+    .week-tabs{display:flex;gap:8px;overflow:auto;padding-bottom:3px;margin:14px 0}
+    .week-btn{
+      border:1px solid var(--line);background:white;border-radius:999px;padding:9px 13px;
+      white-space:nowrap;font-weight:800;color:#5c665f
+    }
+    .week-btn.active{background:var(--dark);color:white;border-color:var(--dark)}
+
+    .list{display:grid;gap:10px}
+    .list-row{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:14px;border:1px solid var(--line);border-radius:16px;background:white;
+    }
+    .list-row .left{display:flex;align-items:center;gap:12px}
+    .status-dot{width:10px;height:10px;border-radius:50%;background:#aeb5b0}
+    .status-dot.ok{background:#78c633}
+    .status-dot.next{background:#111}
+    .status-dot.warn{background:#f3b340}
+
+    .chart{
+      height:220px;display:flex;align-items:flex-end;gap:9px;padding-top:20px;
+    }
+    .bar{
+      flex:1;min-width:12px;border-radius:10px 10px 4px 4px;
+      background:#dfe4de;position:relative;transition:.2s;
+    }
+    .bar.active{background:var(--accent)}
+    .bar:hover{transform:translateY(-3px)}
+    .bar span{
+      position:absolute;left:50%;transform:translateX(-50%);
+      bottom:-24px;font-size:10px;color:var(--muted);font-weight:800;
+    }
+
+    .goal-card{
+      display:grid;gap:14px;
+      background:linear-gradient(145deg,#fff,#f8faf5);
+    }
+    .goal-top{display:flex;justify-content:space-between;gap:16px}
+    .goal-number{font-size:42px;font-weight:950;letter-spacing:-2px}
+    .circle-progress{
+      width:82px;height:82px;border-radius:50%;
+      background:conic-gradient(var(--accent) 0 64%, #e7ebe6 64% 100%);
+      display:grid;place-items:center;
+    }
+    .circle-progress:after{
+      content:"64%";width:62px;height:62px;border-radius:50%;background:white;
+      display:grid;place-items:center;font-weight:950;font-size:14px;
+    }
+
+    .achievement-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+    }
+    .achievement{
+      min-height:180px;border:1px solid var(--line);border-radius:20px;padding:18px;
+      display:flex;flex-direction:column;justify-content:space-between;background:white;
+    }
+    .achievement.locked{opacity:.45;filter:grayscale(1)}
+    .medal{
+      width:58px;height:58px;border-radius:18px;background:var(--accent);
+      display:grid;place-items:center;font-size:28px
+    }
+
+    .event-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+    }
+    .event{
+      min-height:280px;border-radius:24px;padding:20px;position:relative;overflow:hidden;
+      display:flex;flex-direction:column;justify-content:flex-end;color:white;
+      background:#111;
+    }
+    .event:before{
+      content:"";position:absolute;inset:0;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(185,255,59,.42), transparent 24%),
+        linear-gradient(180deg,transparent 15%,rgba(0,0,0,.85));
+    }
+    .event.blue:after,.event.couple:after,.event.sunset:after{
+      content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-50px;top:-45px;filter:blur(4px)
+    }
+    .event.blue:after{background:#2d7fff}
+    .event.couple:after{background:#ff7e9c}
+    .event.sunset:after{background:#ff9f43}
+    .event > *{position:relative;z-index:2}
+    .event .tag{align-self:flex-start;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);padding:7px 10px;border-radius:999px;font-size:11px;font-weight:900}
+    .event h3{font-size:26px;margin:10px 0 5px}
+
+    .profile-layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:16px}
+    .profile-card{text-align:center}
+    .profile-avatar{
+      width:110px;height:110px;margin:6px auto 14px;border-radius:32px;
+      display:grid;place-items:center;background:linear-gradient(145deg,var(--accent),#eaffbd);
+      font-size:36px;font-weight:950;
+    }
+    .sport-option{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 0;border-bottom:1px solid var(--line)
+    }
+    .sport-option:last-child{border-bottom:0}
+    .switch{
+      width:48px;height:28px;border-radius:999px;background:#dfe4df;padding:3px;border:none;
+      transition:.2s;position:relative
+    }
+    .switch::after{
+      content:"";width:22px;height:22px;background:white;border-radius:50%;
+      display:block;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.12)
+    }
+    .switch.on{background:var(--accent)}
+    .switch.on::after{transform:translateX(20px)}
+
+    .mobile-nav{
+      display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:60;
+      background:rgba(11,13,15,.96);backdrop-filter:blur(14px);
+      border-radius:20px;padding:8px;
+      grid-template-columns:repeat(5,1fr);box-shadow:0 15px 40px rgba(0,0,0,.28);
+    }
+    .mobile-nav button{
+      border:none;background:transparent;color:#8f9891;border-radius:14px;padding:9px 4px;
+      font-size:10px;font-weight:800;display:grid;place-items:center;gap:3px
+    }
+    .mobile-nav button.active{background:var(--accent);color:#172000}
+    .mobile-nav svg{width:18px;height:18px}
+
+    /* MODAL / TOAST */
+    .modal-wrap{
+      position:fixed;inset:0;background:rgba(4,6,5,.62);z-index:100;
+      display:grid;place-items:center;padding:18px;backdrop-filter:blur(6px)
+    }
+    .modal{
+      width:min(520px,100%);max-height:90vh;overflow:auto;background:white;border-radius:28px;padding:24px;
+      box-shadow:0 24px 80px rgba(0,0,0,.28)
+    }
+    .modal-head{display:flex;justify-content:space-between;gap:20px;align-items:center}
+    .modal-head h3{margin:0;font-size:24px}
+    .close-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:white;font-size:20px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+
+    .timer{
+      font-size:58px;font-weight:950;letter-spacing:-3px;text-align:center;margin:24px 0 6px
+    }
+    .timer-sub{text-align:center;color:var(--muted);margin-bottom:22px}
+    .interval{
+      padding:14px;border-radius:16px;background:#f1f4ef;margin-bottom:10px;
+      display:flex;justify-content:space-between;gap:12px
+    }
+
+    .toast{
+      position:fixed;right:20px;bottom:20px;z-index:200;
+      background:#111;color:white;padding:14px 16px;border-radius:16px;
+      box-shadow:0 14px 40px rgba(0,0,0,.22);font-weight:750;
+      transform:translateY(30px);opacity:0;pointer-events:none;transition:.25s;
+    }
+    .toast.show{transform:none;opacity:1}
+
+    .empty-preview{
+      padding:22px;border:1px dashed #bfc8c0;border-radius:20px;background:#fafbf9;text-align:center;color:var(--muted)
+    }
+
+    @media (max-width:1100px){
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .grid-3,.event-grid{grid-template-columns:repeat(2,1fr)}
+      .achievement-grid{grid-template-columns:repeat(2,1fr)}
+      .login-wrap{grid-template-columns:1fr}
+      .login-brand{min-height:430px}
+      .hero-word{margin-top:70px}
+    }
+    @media (max-width:860px){
+      .sidebar{display:none}
+      .main{margin-left:0;padding:18px 16px 100px}
+      .mobile-nav{display:grid}
+      .grid-2,.profile-layout{grid-template-columns:1fr}
+      .workout-hero{grid-template-columns:1fr}
+      .run-badge{display:none}
+      .top-actions .secondary{display:none}
+    }
+    @media (max-width:620px){
+      .login-screen{padding:12px}
+      .login-brand{display:none}
+      .login-card{border-radius:26px;padding:24px}
+      .grid-3,.grid-4,.event-grid,.achievement-grid{grid-template-columns:1fr}
+      .workout-hero h2{font-size:34px}
+      .topbar h1{font-size:24px}
+      .topbar p{font-size:13px}
+      .metric{font-size:30px}
+      .card{padding:17px;border-radius:20px}
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-wrap">
+      <section class="login-brand">
+        <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+        <h1 class="hero-word">Seu esporte.<br>Seu ritmo.<br><em>Seu lifestyle.</em></h1>
+        <p class="hero-sub">Uma experiência pessoal para transformar metas em rotina, evolução em conquista e esporte em parte da sua identidade.</p>
+        <div class="orb"></div>
+      </section>
+
+      <section class="login-card">
+        <div class="brand-mark" style="color:#111;margin-bottom:32px"><span class="brand-dot"></span> RUN/LIFE</div>
+        <h2>Bem-vindo de volta.</h2>
+        <p>Entre para acompanhar seus treinos, metas e conquistas.</p>
+
+        <div class="field">
+          <label>E-mail</label>
+          <input id="emailInput" type="email" value="lucas@demo.com" />
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input id="passwordInput" type="password" value="123456" />
+        </div>
+        <button class="primary accent" id="loginBtn">Entrar no app →</button>
+        <div class="login-demo">Protótipo: qualquer e-mail e senha funcionam. Os dados exibidos são apenas demonstrativos.</div>
+      </section>
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+      <nav class="nav" id="sideNav"></nav>
+      <div class="sidebar-bottom">
+        <div class="mini-profile">
+          <div class="avatar">L</div>
+          <div><strong>Lucas</strong><small>Running • Starter</small></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Home</h1>
+          <p id="pageSubtitle">Continue evoluindo um treino de cada vez.</p>
+        </div>
+        <div class="top-actions">
+          <button class="secondary" data-action="eventPreview">Explorar eventos</button>
+          <button class="icon-btn" id="notifyBtn" aria-label="Notificações">
+            <span class="ping"></span>
+            🔔
+          </button>
+        </div>
+      </header>
+
+      <!-- HOME -->
+      <section class="page active" data-page="home">
+        <div class="grid grid-2">
+          <article class="card workout-hero">
+            <div>
+              <div class="eyebrow">Treino de hoje</div>
+              <h2>Construa seu primeiro 5K sem precisar correr tudo de uma vez.</h2>
+              <div class="chips">
+                <span class="chip">Treino #11</span>
+                <span class="chip">32 min</span>
+                <span class="chip">Leve → moderado</span>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+                <button class="primary accent" data-action="startWorkout">▶ Começar treino</button>
+                <button class="secondary" data-nav="treinos">Ver plano completo</button>
+              </div>
+            </div>
+            <div class="run-badge">5K</div>
+          </article>
+
+          <article class="card goal-card">
+            <div class="eyebrow">Meta atual</div>
+            <div class="goal-top">
+              <div>
+                <div class="goal-number">3,2 <span style="font-size:20px">km</span></div>
+                <div class="muted">Seu recorde atual</div>
+              </div>
+              <div class="circle-progress"></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-weight:800">
+                <span>Primeiros 5K</span><span>3,2 / 5 km</span>
+              </div>
+              <div class="progress"><span style="width:64%"></span></div>
+              <div class="muted" style="font-size:13px">Faltam 1,8 km para desbloquear a conquista FIRST 5K.</div>
+            </div>
+            <button class="secondary" data-nav="objetivos">Ver objetivo</button>
+          </article>
+        </div>
+
+        <div class="grid grid-4" style="margin-top:16px">
+          <article class="card">
+            <div class="eyebrow">Sequência</div>
+            <div class="metric">🔥 4 <small>treinos</small></div>
+            <p class="muted">Sua melhor sequência até agora.</p>
+          </article>
+          <article class="card">
+            <div class="eyebrow">Quilometragem</div>
+            <div class="metric">18,7 <small>km</small></div>
+            <p class="muted">Acumulados neste ciclo.</p>
+          </article>
+          <article class="card">
+            <div class="eyebrow">Treinos</div>
+            <div class="metric">7/9</div>
+            <p class="muted">78% concluído nesta fase.</p>
+          </article>
+          <article class="card dark">
+            <div class="eyebrow">Próxima conquista</div>
+            <div class="metric" style="color:var(--accent)">3K</div>
+            <p class="muted">Você já bateu. Compartilhe sua evolução.</p>
+            <button class="primary accent" data-action="shareAchievement">Compartilhar</button>
+          </article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px">
+          <article class="card">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+              <div>
+                <div class="eyebrow">Próximos passos</div>
+                <h3>Esta semana</h3>
+              </div>
+              <button class="secondary" data-nav="treinos">Abrir treinos</button>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item done">
+                <div class="step">✓</div>
+                <div><strong>Terça • Corrida leve</strong><div class="muted">2,7 km • concluído</div></div>
+                <span class="chip">feito</span>
+              </div>
+              <div class="timeline-item">
+                <div class="step">11</div>
+                <div><strong>Quinta • Intervalado</strong><div class="muted">32 min • hoje</div></div>
+                <span class="chip">hoje</span>
+              </div>
+              <div class="timeline-item">
+                <div class="step">12</div>
+                <div><strong>Domingo • Longo leve</strong><div class="muted">3,5 km</div></div>
+                <span class="chip">próximo</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="eyebrow">Seu ecossistema</div>
+            <h3>O esporte que combina com sua fase.</h3>
+            <p class="muted">Running está ativo. As outras modalidades aparecem como expansão futura.</p>
+            <div class="sport-option"><div><strong>🏃 Running</strong><div class="muted">Ativo agora</div></div><span class="chip">ATIVO</span></div>
+            <div class="sport-option"><div><strong>⚽ Altinha</strong><div class="muted">Em breve</div></div><span class="chip">LOCKED</span></div>
+            <div class="sport-option"><div><strong>🏐 Futevôlei</strong><div class="muted">Em breve</div></div><span class="chip">LOCKED</span></div>
+            <div class="sport-option"><div><strong>🏋️ Musculação</strong><div class="muted">Em breve</div></div><span class="chip">LOCKED</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- TREINOS -->
+      <section class="page" data-page="treinos">
+        <div class="card dark">
+          <div class="eyebrow">Programa atual</div>
+          <h2 style="font-size:38px;letter-spacing:-1.7px;margin:8px 0">ZERO → 5K</h2>
+          <p class="muted">8 semanas para transformar caminhada + trote em corrida contínua.</p>
+          <div class="progress dark-track"><span style="width:38%"></span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span>Semana 3 de 8</span><span>38%</span></div>
+        </div>
+
+        <div class="week-tabs" id="weekTabs"></div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="eyebrow">Semana selecionada</div>
+            <h3 id="weekTitle">Semana 3</h3>
+            <div class="list" id="workoutList"></div>
+          </article>
+          <article class="card">
+            <div class="eyebrow">Orientação</div>
+            <h3>Como executar</h3>
+            <p class="muted">Mantenha o esforço confortável. Você deve conseguir falar frases curtas durante o trote. Se sentir dor fora do esforço habitual, interrompa e procure orientação profissional.</p>
+            <div class="empty-preview">
+              <strong>Feedback pós-treino</strong>
+              <p style="margin:8px 0 0">No produto real, o aluno poderá classificar o treino como fácil, ideal ou pesado para ajudar o profissional a ajustar o próximo ciclo.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- PROGRESSO -->
+      <section class="page" data-page="progresso">
+        <div class="grid grid-4">
+          <article class="card"><div class="eyebrow">Recorde</div><div class="metric">3,2 <small>km</small></div></article>
+          <article class="card"><div class="eyebrow">Melhor pace</div><div class="metric">6:19 <small>/km</small></div></article>
+          <article class="card"><div class="eyebrow">Mês</div><div class="metric">12,4 <small>km</small></div></article>
+          <article class="card"><div class="eyebrow">Consistência</div><div class="metric">78<small>%</small></div></article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px">
+          <article class="card">
+            <div class="eyebrow">Evolução de distância</div>
+            <h3>Últimos 7 treinos</h3>
+            <div class="chart">
+              <div class="bar" style="height:31%"><span>T1</span></div>
+              <div class="bar" style="height:40%"><span>T2</span></div>
+              <div class="bar" style="height:47%"><span>T3</span></div>
+              <div class="bar" style="height:54%"><span>T4</span></div>
+              <div class="bar" style="height:59%"><span>T5</span></div>
+              <div class="bar" style="height:64%"><span>T6</span></div>
+              <div class="bar active" style="height:78%"><span>T7</span></div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="eyebrow">Histórico</div>
+            <h3>Treinos recentes</h3>
+            <div class="list">
+              <div class="list-row"><div class="left"><span class="status-dot ok"></span><div><strong>Corrida leve</strong><div class="muted">01 set • 3,2 km</div></div></div><strong>21:02</strong></div>
+              <div class="list-row"><div class="left"><span class="status-dot ok"></span><div><strong>Intervalado</strong><div class="muted">29 ago • 2,8 km</div></div></div><strong>19:34</strong></div>
+              <div class="list-row"><div class="left"><span class="status-dot ok"></span><div><strong>Corrida + caminhada</strong><div class="muted">27 ago • 2,4 km</div></div></div><strong>18:11</strong></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- OBJETIVOS -->
+      <section class="page" data-page="objetivos">
+        <div class="grid grid-2">
+          <article class="card goal-card">
+            <div class="eyebrow">Objetivo principal</div>
+            <div class="goal-top">
+              <div>
+                <h2 style="font-size:38px;margin:8px 0 5px;letter-spacing:-1.7px">Completar 5 km</h2>
+                <div class="muted">Prazo: 30 de outubro</div>
+              </div>
+              <div class="circle-progress"></div>
+            </div>
+            <div class="progress"><span style="width:64%"></span></div>
+            <div style="display:flex;justify-content:space-between;font-weight:800"><span>3,2 km</span><span>5 km</span></div>
+            <button class="primary" data-action="editGoal">Editar objetivo</button>
+          </article>
+
+          <article class="card">
+            <div class="eyebrow">Próxima fase</div>
+            <h3>Depois dos 5K</h3>
+            <p class="muted">O app pode sugerir uma nova jornada conforme seu histórico e seu objetivo.</p>
+            <div class="list">
+              <div class="list-row"><div class="left"><span class="status-dot next"></span><div><strong>5K → 10K</strong><div class="muted">Progressão de distância</div></div></div><span>→</span></div>
+              <div class="list-row"><div class="left"><span class="status-dot warn"></span><div><strong>5K mais rápido</strong><div class="muted">Foco em ritmo</div></div></div><span>→</span></div>
+            </div>
+          </article>
+        </div>
+        <div style="margin-top:16px">
+          <button class="primary accent" data-action="newGoal">+ Adicionar objetivo futuro</button>
+        </div>
+      </section>
+
+      <!-- CONQUISTAS -->
+      <section class="page" data-page="conquistas">
+        <div class="achievement-grid">
+          <article class="achievement">
+            <div class="medal">⚡</div>
+            <div><div class="eyebrow">Desbloqueada</div><h3>Primeiro treino</h3><p class="muted">Você começou. Esse era o passo mais importante.</p></div>
+          </article>
+          <article class="achievement">
+            <div class="medal">🏃</div>
+            <div><div class="eyebrow">Desbloqueada</div><h3>Primeiro 1K</h3><p class="muted">Primeiro quilômetro completo registrado.</p></div>
+          </article>
+          <article class="achievement">
+            <div class="medal">🔥</div>
+            <div><div class="eyebrow">Desbloqueada</div><h3>3 treinos seguidos</h3><p class="muted">Consistência começa a virar identidade.</p></div>
+          </article>
+          <article class="achievement">
+            <div class="medal">3K</div>
+            <div><div class="eyebrow">Desbloqueada</div><h3>First 3K</h3><p class="muted">Seu novo recorde pessoal.</p><button class="secondary" data-action="shareAchievement">Compartilhar</button></div>
+          </article>
+          <article class="achievement locked">
+            <div class="medal">5K</div>
+            <div><div class="eyebrow">Bloqueada</div><h3>First 5K</h3><p class="muted">Complete 5 km em uma atividade.</p></div>
+          </article>
+          <article class="achievement locked">
+            <div class="medal">50</div>
+            <div><div class="eyebrow">Bloqueada</div><h3>50 km Club</h3><p class="muted">Some 50 km em atividades.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- EVENTOS -->
+      <section class="page" data-page="eventos">
+        <div class="card" style="margin-bottom:16px">
+          <div class="eyebrow">Lifestyle & comunidade</div>
+          <h2 style="font-size:38px;letter-spacing:-1.8px;margin:8px 0">Corra por algo além do cronômetro.</h2>
+          <p class="muted">Esta área representa o diferencial social do ecossistema: eventos por perfil, momento e estilo de vida.</p>
+        </div>
+
+        <div class="event-grid">
+          <article class="event blue">
+            <span class="tag">18+ • SOCIAL</span>
+            <h3>Blue Sock Run</h3>
+            <p>Corrida leve + café para solteiros que querem conhecer gente nova.</p>
+            <button class="primary accent" data-action="eventDetails" data-event="Blue Sock Run">Ver evento</button>
+          </article>
+          <article class="event couple">
+            <span class="tag">CASAIS</span>
+            <h3>Couples 5K</h3>
+            <p>Uma experiência esportiva para correr e conquistar a meta juntos.</p>
+            <button class="primary accent" data-action="eventDetails" data-event="Couples 5K">Ver evento</button>
+          </article>
+          <article class="event sunset">
+            <span class="tag">COMMUNITY</span>
+            <h3>Sunset Run</h3>
+            <p>Corrida, música, pôr do sol e comunidade para fechar o domingo.</p>
+            <button class="primary accent" data-action="eventDetails" data-event="Sunset Run">Ver evento</button>
+          </article>
+        </div>
+      </section>
+
+      <!-- PERFIL -->
+      <section class="page" data-page="perfil">
+        <div class="profile-layout">
+          <article class="card profile-card">
+            <div class="profile-avatar">L</div>
+            <h2 style="margin:0">Lucas</h2>
+            <p class="muted">Running • Starter</p>
+            <div class="chips" style="justify-content:center">
+              <span class="chip">Meta 5K</span>
+              <span class="chip">7 treinos</span>
+            </div>
+            <button class="secondary" style="margin-top:18px;width:100%" data-action="editProfile">Editar perfil</button>
+          </article>
+
+          <article class="card">
+            <div class="eyebrow">Dados pessoais</div>
+            <h3>Seu perfil esportivo</h3>
+            <div class="grid grid-2" style="margin-top:16px">
+              <div class="field"><label>Nome</label><input value="Lucas" disabled /></div>
+              <div class="field"><label>Idade</label><input value="24 anos" disabled /></div>
+              <div class="field"><label>Altura</label><input value="1,78 m" disabled /></div>
+              <div class="field"><label>Peso atual</label><input value="82 kg" disabled /></div>
+            </div>
+
+            <div class="eyebrow" style="margin-top:18px">Preferências sociais</div>
+            <div class="sport-option"><div><strong>Eventos sociais</strong><div class="muted">Receber eventos de comunidade.</div></div><button class="switch on" data-action="toggle"></button></div>
+            <div class="sport-option"><div><strong>Singles Run</strong><div class="muted">Eventos para solteiros.</div></div><button class="switch on" data-action="toggle"></button></div>
+            <div class="sport-option"><div><strong>Couples Run</strong><div class="muted">Eventos para casais.</div></div><button class="switch" data-action="toggle"></button></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav" id="mobileNav"></nav>
+  </div>
+
+  <div id="modalWrap" class="modal-wrap hidden"></div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const pages = {
+      home:{label:"Home",icon:"⌂",subtitle:"Continue evoluindo um treino de cada vez."},
+      treinos:{label:"Treinos",icon:"▶",subtitle:"Seu programa, semana por semana."},
+      progresso:{label:"Progresso",icon:"↗",subtitle:"Veja o que já mudou desde o primeiro treino."},
+      objetivos:{label:"Objetivos",icon:"◎",subtitle:"Metas claras tornam evolução visível."},
+      conquistas:{label:"Conquistas",icon:"★",subtitle:"Cada marco é uma prova de consistência."},
+      eventos:{label:"Eventos",icon:"◉",subtitle:"Lifestyle, comunidade e novas experiências."},
+      perfil:{label:"Perfil",icon:"●",subtitle:"Preferências, dados e modalidades."}
+    };
+
+    const svgIcon = {
+      home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>',
+      treinos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4Z"/></svg>',
+      progresso:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19V3"/></svg>',
+      objetivos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M21 12h-3M12 21v-3M3 12h3"/></svg>',
+      conquistas:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg>',
+      eventos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/></svg>',
+      perfil:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c.7-4 3.4-6 8-6s7.3 2 8 6"/></svg>'
+    };
+
+    const sideNav = document.getElementById("sideNav");
+    Object.entries(pages).forEach(([key,p])=>{
+      const b=document.createElement("button");
+      b.className="nav-btn"+(key==="home"?" active":"");
+      b.dataset.nav=key;
+      b.innerHTML=svgIcon[key]+`<span>${p.label}</span>`;
+      sideNav.appendChild(b);
+    });
+
+    const mobileKeys=["home","treinos","progresso","eventos","perfil"];
+    const mobileNav=document.getElementById("mobileNav");
+    mobileKeys.forEach(key=>{
+      const p=pages[key];
+      const b=document.createElement("button");
+      b.className=key==="home"?"active":"";
+      b.dataset.nav=key;
+      b.innerHTML=svgIcon[key]+`<span>${p.label}</span>`;
+      mobileNav.appendChild(b);
+    });
+
+    function navigate(page){
+      document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
+      document.querySelectorAll("[data-nav]").forEach(x=>x.classList.toggle("active",x.dataset.nav===page));
+      document.getElementById("pageTitle").textContent=pages[page].label;
+      document.getElementById("pageSubtitle").textContent=pages[page].subtitle;
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    document.addEventListener("click",e=>{
+      const nav=e.target.closest("[data-nav]");
+      if(nav){navigate(nav.dataset.nav);return;}
+      const action=e.target.closest("[data-action]");
+      if(action) runAction(action.dataset.action,action);
+    });
+
+    document.getElementById("loginBtn").addEventListener("click",()=>{
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("appShell").classList.remove("hidden");
+      showToast("Bem-vindo, Lucas. Seu próximo treino está pronto.");
+    });
+
+    document.getElementById("notifyBtn").addEventListener("click",()=>showToast("Hoje • Treino #11 disponível às 18h."));
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Enter" && !document.getElementById("loginScreen").classList.contains("hidden")){
+        document.getElementById("loginBtn").click();
+      }
+      if(e.key==="Escape") closeModal();
+    });
+
+    const weeks = {
+      1:[
+        ["Treino #1","Caminhada + trote","24 min","done"],
+        ["Treino #2","Caminhada ativa","28 min","done"],
+        ["Treino #3","Trote leve","25 min","done"]
+      ],
+      2:[
+        ["Treino #4","Intervalado leve","27 min","done"],
+        ["Treino #5","Corrida + caminhada","30 min","done"],
+        ["Treino #6","Longo leve","2,4 km","done"]
+      ],
+      3:[
+        ["Treino #7","Corrida leve","2,7 km","done"],
+        ["Treino #8","Intervalado","32 min","next"],
+        ["Treino #9","Longo leve","3,5 km","warn"]
+      ],
+      4:[
+        ["Treino #10","Corrida contínua","3,2 km",""],
+        ["Treino #11","Intervalado progressivo","35 min",""],
+        ["Treino #12","Longo leve","4 km",""]
+      ],
+      5:[
+        ["Treino #13","Corrida contínua","3,7 km",""],
+        ["Treino #14","Técnica + ritmo","36 min",""],
+        ["Treino #15","Longo leve","4,3 km",""]
+      ],
+      6:[
+        ["Treino #16","Corrida leve","4 km",""],
+        ["Treino #17","Intervalado","38 min",""],
+        ["Treino #18","Longo","4,6 km",""]
+      ],
+      7:[
+        ["Treino #19","Corrida contínua","4,4 km",""],
+        ["Treino #20","Ritmo controlado","30 min",""],
+        ["Treino #21","Simulado","4,8 km",""]
+      ],
+      8:[
+        ["Treino #22","Ativação","25 min",""],
+        ["Treino #23","Leve","20 min",""],
+        ["Treino #24","FIRST 5K","5 km",""]
+      ]
+    };
+
+    const weekTabs=document.getElementById("weekTabs");
+    for(let i=1;i<=8;i++){
+      const b=document.createElement("button");
+      b.className="week-btn"+(i===3?" active":"");
+      b.textContent=`Semana ${i}`;
+      b.onclick=()=>renderWeek(i,b);
+      weekTabs.appendChild(b);
+    }
+
+    function renderWeek(n,button){
+      document.querySelectorAll(".week-btn").forEach(x=>x.classList.remove("active"));
+      if(button) button.classList.add("active");
+      document.getElementById("weekTitle").textContent=`Semana ${n}`;
+      const list=document.getElementById("workoutList");
+      list.innerHTML="";
+      weeks[n].forEach((w,idx)=>{
+        const row=document.createElement("div");
+        row.className="list-row";
+        row.innerHTML=`<div class="left"><span class="status-dot ${w[3]}"></span><div><strong>${w[0]} • ${w[1]}</strong><div class="muted">${w[2]}</div></div></div>
+          <button class="secondary" data-action="${n===3&&idx===1?'startWorkout':'workoutInfo'}">${n===3&&idx===1?'Começar':'Detalhes'}</button>`;
+        list.appendChild(row);
+      });
+    }
+    renderWeek(3,document.querySelectorAll(".week-btn")[2]);
+
+    function openModal(content){
+      const wrap=document.getElementById("modalWrap");
+      wrap.innerHTML=`<div class="modal">${content}</div>`;
+      wrap.classList.remove("hidden");
+      wrap.addEventListener("click",ev=>{if(ev.target===wrap)closeModal();},{once:true});
+    }
+    function closeModal(){document.getElementById("modalWrap").classList.add("hidden")}
+
+    let timerInterval=null, seconds=0;
+    function startTimer(){
+      seconds=0;
+      clearInterval(timerInterval);
+      timerInterval=setInterval(()=>{
+        seconds++;
+        const m=String(Math.floor(seconds/60)).padStart(2,"0");
+        const s=String(seconds%60).padStart(2,"0");
+        const el=document.getElementById("timer");
+        if(el) el.textContent=`${m}:${s}`;
+        else clearInterval(timerInterval);
+      },1000);
+    }
+
+    function runAction(action,el){
+      if(action==="startWorkout"){
+        openModal(`
+          <div class="modal-head"><div><div class="eyebrow">Treino #11</div><h3>Intervalado</h3></div><button class="close-btn" onclick="closeModal()">×</button></div>
+          <div class="timer" id="timer">00:00</div>
+          <div class="timer-sub">Sessão demonstrativa</div>
+          <div class="interval"><span>Aquecimento</span><strong>5 min</strong></div>
+          <div class="interval"><span>2 min trote + 1 min caminhada</span><strong>× 7</strong></div>
+          <div class="interval"><span>Desaquecimento</span><strong>6 min</strong></div>
+          <div class="modal-actions"><button class="secondary" onclick="closeModal()">Cancelar</button><button class="primary accent" onclick="finishWorkout()">Concluir treino</button></div>
+        `);
+        startTimer();
+      }
+
+      if(action==="workoutInfo"){
+        openModal(`<div class="modal-head"><h3>Detalhes do treino</h3><button class="close-btn" onclick="closeModal()">×</button></div><p class="muted">No app real, esta tela traria aquecimento, blocos, descanso, instruções do profissional e feedback pós-treino.</p><div class="modal-actions"><button class="primary" onclick="closeModal()">Entendi</button></div>`);
+      }
+
+      if(action==="shareAchievement"){
+        openModal(`
+          <div class="modal-head"><div><div class="eyebrow">Story Card</div><h3>FIRST 3K 🏃</h3></div><button class="close-btn" onclick="closeModal()">×</button></div>
+          <div style="background:#0b0d0f;color:white;border-radius:22px;padding:28px;margin-top:18px">
+            <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+            <div style="font-size:56px;font-weight:950;letter-spacing:-3px;margin-top:70px">3.00 KM</div>
+            <div style="font-size:22px;color:#bcc5be">21:02 • novo recorde pessoal</div>
+            <div style="margin-top:70px;color:var(--accent);font-weight:900">FIRST 3K UNLOCKED</div>
+          </div>
+          <div class="modal-actions"><button class="secondary" onclick="copyShare()">Copiar texto</button><button class="primary accent" onclick="copyShare()">Compartilhar</button></div>
+        `);
+      }
+
+      if(action==="editGoal" || action==="newGoal"){
+        openModal(`
+          <div class="modal-head"><h3>${action==="newGoal"?"Novo objetivo":"Editar objetivo"}</h3><button class="close-btn" onclick="closeModal()">×</button></div>
+          <div class="field" style="margin-top:18px"><label>Objetivo</label><select><option>Completar 5 km</option><option>Completar 10 km</option><option>Melhorar pace nos 5 km</option></select></div>
+          <div class="field"><label>Prazo</label><input type="date" value="2026-10-30"></div>
+          <div class="field"><label>Observação</label><textarea rows="3">Quero conseguir correr sem caminhar até o final.</textarea></div>
+          <div class="modal-actions"><button class="secondary" onclick="closeModal()">Cancelar</button><button class="primary accent" onclick="saveGeneric('Objetivo salvo.')">Salvar objetivo</button></div>
+        `);
+      }
+
+      if(action==="editProfile"){
+        openModal(`
+          <div class="modal-head"><h3>Editar perfil</h3><button class="close-btn" onclick="closeModal()">×</button></div>
+          <div class="grid grid-2" style="margin-top:18px">
+            <div class="field"><label>Peso</label><input value="82"></div>
+            <div class="field"><label>Altura</label><input value="178"></div>
+          </div>
+          <div class="field"><label>Dias disponíveis</label><select><option>3 dias por semana</option><option>4 dias por semana</option><option>5 dias por semana</option></select></div>
+          <div class="modal-actions"><button class="secondary" onclick="closeModal()">Cancelar</button><button class="primary accent" onclick="saveGeneric('Perfil atualizado.')">Salvar</button></div>
+        `);
+      }
+
+      if(action==="toggle"){el.classList.toggle("on")}
+
+      if(action==="eventPreview"){navigate("eventos")}
+
+      if(action==="eventDetails"){
+        openModal(`
+          <div class="modal-head"><div><div class="eyebrow">Evento demonstrativo</div><h3>${el.dataset.event}</h3></div><button class="close-btn" onclick="closeModal()">×</button></div>
+          <p class="muted">Domingo • 08h • Rio de Janeiro</p>
+          <div class="empty-preview"><strong>Área futura de comunidade</strong><p style="margin:7px 0 0">Lista de participantes, inscrição, ponto de encontro, nível recomendado e benefícios do evento.</p></div>
+          <div class="modal-actions"><button class="primary accent" onclick="saveGeneric('Interesse registrado no evento.')">Tenho interesse</button></div>
+        `);
+      }
+    }
+
+    function finishWorkout(){
+      clearInterval(timerInterval);
+      closeModal();
+      showToast("Treino concluído! Sequência atualizada para 5 treinos 🔥");
+    }
+    function copyShare(){
+      const text="FIRST 3K 🏃 — 3.00 KM • novo recorde pessoal • #RUNLIFE";
+      if(navigator.clipboard) navigator.clipboard.writeText(text);
+      closeModal();showToast("Texto de compartilhamento copiado.");
+    }
+    function saveGeneric(msg){closeModal();showToast(msg)}
+    function showToast(msg){
+      const t=document.getElementById("toast");
+      t.textContent=msg;t.classList.add("show");
+      setTimeout(()=>t.classList.remove("show"),2600);
+    }
+  </script>
+</body>
+</html>
