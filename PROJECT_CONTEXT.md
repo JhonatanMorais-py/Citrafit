@@ -21,7 +21,7 @@ Este documento é a referência persistente para as próximas decisões do proje
 - Formas: cartões grandes e arredondados, pills, círculos e cantos suaves; raio-base de 24 px.
 - Profundidade: sombras discretas nas superfícies claras e brilho/halo verde sobre fundos escuros.
 - Tipografia: Inter/system sans; títulos muito pesados, compactos e com tracking negativo; labels em caixa-alta, pequenos e espaçados.
-- Iconografia: SVG linear simples na navegação; símbolos/emoji aparecem em algumas ações e conquistas.
+- Iconografia: SVG linear simples, consistente e funcional.
 
 ## Linguagem de interface
 
@@ -42,7 +42,7 @@ Este documento é a referência persistente para as próximas decisões do proje
 
 ## Arquitetura atual do produto
 
-- Login demonstrativo.
+- Cadastro e login reais integrados ao Supabase Auth e a `cad_perfis`.
 - Home/dashboard.
 - Plano de treinos “ZERO → 5K”, dividido em oito semanas.
 - Progresso e histórico.
@@ -105,5 +105,5 @@ Este documento é a referência persistente para as próximas decisões do proje
 
 ## Fonte atual de verdade
 
-- Protótipo monolítico: `index.html` (HTML, CSS e JavaScript sem dependências).
+- Interface principal em `index.html`, com funcionalidades novas separadas em módulos de frontend e backend.
 - Esta memória deve ser atualizada quando nome, público, posicionamento ou sistema visual forem decididos formalmente.

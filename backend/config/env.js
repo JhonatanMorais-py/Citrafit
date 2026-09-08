@@ -12,4 +12,5 @@ if (missingVariables.length > 0) {
 export const env = Object.freeze({
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  appPort: Number(process.env.APP_PORT || 3000),
 });

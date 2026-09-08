@@ -1,10 +1,14 @@
-git bra<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b0d0f" />
-  <title>RUN/LIFE — Protótipo Front-end</title>
+  <title>RUN/LIFE</title>
+  <link rel="stylesheet" href="frontend/modules/auth/register.css" />
+  <script src="frontend/modules/auth/register.js" defer></script>
+  <script src="frontend/modules/auth/login.js" defer></script>
+  <script src="frontend/modules/profile/profile.js" defer></script>
   <style>
     :root{
       --bg:#f4f5f2;
@@ -139,7 +143,7 @@ git bra<!DOCTYPE html>
       border-radius:14px;padding:12px 15px;font-weight:750;
       display:inline-flex;align-items:center;justify-content:center;gap:8px;
     }
-    .login-demo{
+    .login-note{
       margin-top:16px;padding:14px;border-radius:15px;background:#f4f7ef;color:#526149;
       font-size:13px;line-height:1.45;
     }
@@ -470,14 +474,76 @@ git bra<!DOCTYPE html>
 
         <div class="field">
           <label>E-mail</label>
-          <input id="emailInput" type="email" value="lucas@demo.com" />
+          <input id="emailInput" type="email" autocomplete="email" placeholder="voce@exemplo.com" />
         </div>
         <div class="field">
           <label>Senha</label>
-          <input id="passwordInput" type="password" value="123456" />
+          <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Digite sua senha" />
         </div>
-        <button class="primary accent" id="loginBtn">Entrar no app →</button>
-        <div class="login-demo">Protótipo: qualquer e-mail e senha funcionam. Os dados exibidos são apenas demonstrativos.</div>
+        <button class="primary accent" id="loginBtn">Entrar no app</button>
+        <p class="register-status" id="loginStatus" role="status" aria-live="polite"></p>
+        <div class="auth-divider"><span>ou</span></div>
+        <button class="register-entry" id="showRegisterBtn" type="button">Criar uma conta</button>
+        <div class="login-note">Seu acesso é validado com segurança antes da entrada na plataforma.</div>
+      </section>
+    </div>
+  </div>
+
+  <div id="registerScreen" class="register-screen hidden" aria-hidden="true">
+    <div class="register-shell">
+      <section class="register-intro" aria-label="Apresentação do cadastro">
+        <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+        <div>
+          <span class="register-kicker">COMECE SUA JORNADA</span>
+          <h1>Seu próximo marco começa aqui.</h1>
+          <p>Crie seu perfil para receber um plano adequado ao seu momento, acompanhar sua evolução e construir consistência.</p>
+        </div>
+        <div class="register-principles">
+          <div><strong>Plano pessoal</strong><span>Treinos alinhados ao seu objetivo.</span></div>
+          <div><strong>Evolução clara</strong><span>Progresso acompanhado em cada etapa.</span></div>
+          <div><strong>Dados protegidos</strong><span>Privacidade desde o primeiro acesso.</span></div>
+        </div>
+      </section>
+
+      <section class="register-card">
+        <button class="register-back" id="backToLoginBtn" type="button">Voltar para o login</button>
+        <div class="register-heading">
+          <span class="register-kicker">NOVA CONTA</span>
+          <h2>Crie seu perfil.</h2>
+          <p>Preencha seus dados de acesso para começar.</p>
+        </div>
+
+        <form id="registerForm" novalidate>
+          <div class="field">
+            <label for="registerName">Nome completo</label>
+            <input id="registerName" name="name" type="text" autocomplete="name" placeholder="Como devemos chamar você?" required minlength="3" />
+            <small class="field-error" data-error-for="registerName"></small>
+          </div>
+          <div class="field">
+            <label for="registerEmail">E-mail</label>
+            <input id="registerEmail" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required />
+            <small class="field-error" data-error-for="registerEmail"></small>
+          </div>
+          <div class="register-fields">
+            <div class="field">
+              <label for="registerPassword">Senha</label>
+              <input id="registerPassword" name="password" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" required minlength="8" />
+              <small class="field-error" data-error-for="registerPassword"></small>
+            </div>
+            <div class="field">
+              <label for="registerPasswordConfirm">Confirmar senha</label>
+              <input id="registerPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" placeholder="Repita sua senha" required minlength="8" />
+              <small class="field-error" data-error-for="registerPasswordConfirm"></small>
+            </div>
+          </div>
+          <label class="privacy-check">
+            <input id="registerPrivacy" name="privacy" type="checkbox" required />
+            <span>Li e concordo com os termos de uso e com a política de privacidade.</span>
+          </label>
+          <small class="field-error privacy-error" data-error-for="registerPrivacy"></small>
+          <button class="primary accent register-submit" type="submit">Criar minha conta</button>
+          <p class="register-status" id="registerStatus" role="status" aria-live="polite"></p>
+        </form>
       </section>
     </div>
   </div>
@@ -488,8 +554,8 @@ git bra<!DOCTYPE html>
       <nav class="nav" id="sideNav"></nav>
       <div class="sidebar-bottom">
         <div class="mini-profile">
-          <div class="avatar">L</div>
-          <div><strong>Lucas</strong><small>Running • Starter</small></div>
+          <div class="avatar" data-user-initials>U</div>
+          <div><strong data-user-name>Usuário</strong><small>Running • Starter</small></div>
         </div>
       </div>
     </aside>
@@ -501,10 +567,8 @@ git bra<!DOCTYPE html>
           <p id="pageSubtitle">Continue evoluindo um treino de cada vez.</p>
         </div>
         <div class="top-actions">
-          <button class="secondary" data-action="eventPreview">Explorar eventos</button>
           <button class="icon-btn" id="notifyBtn" aria-label="Notificações">
-            <span class="ping"></span>
-            🔔
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
           </button>
         </div>
       </header>
@@ -514,290 +578,67 @@ git bra<!DOCTYPE html>
         <div class="grid grid-2">
           <article class="card workout-hero">
             <div>
-              <div class="eyebrow">Treino de hoje</div>
-              <h2>Construa seu primeiro 5K sem precisar correr tudo de uma vez.</h2>
-              <div class="chips">
-                <span class="chip">Treino #11</span>
-                <span class="chip">32 min</span>
-                <span class="chip">Leve → moderado</span>
-              </div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
-                <button class="primary accent" data-action="startWorkout">▶ Começar treino</button>
-                <button class="secondary" data-nav="treinos">Ver plano completo</button>
-              </div>
-            </div>
-            <div class="run-badge">5K</div>
-          </article>
-
-          <article class="card goal-card">
-            <div class="eyebrow">Meta atual</div>
-            <div class="goal-top">
-              <div>
-                <div class="goal-number">3,2 <span style="font-size:20px">km</span></div>
-                <div class="muted">Seu recorde atual</div>
-              </div>
-              <div class="circle-progress"></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-weight:800">
-                <span>Primeiros 5K</span><span>3,2 / 5 km</span>
-              </div>
-              <div class="progress"><span style="width:64%"></span></div>
-              <div class="muted" style="font-size:13px">Faltam 1,8 km para desbloquear a conquista FIRST 5K.</div>
-            </div>
-            <button class="secondary" data-nav="objetivos">Ver objetivo</button>
-          </article>
-        </div>
-
-        <div class="grid grid-4" style="margin-top:16px">
-          <article class="card">
-            <div class="eyebrow">Sequência</div>
-            <div class="metric">🔥 4 <small>treinos</small></div>
-            <p class="muted">Sua melhor sequência até agora.</p>
-          </article>
-          <article class="card">
-            <div class="eyebrow">Quilometragem</div>
-            <div class="metric">18,7 <small>km</small></div>
-            <p class="muted">Acumulados neste ciclo.</p>
-          </article>
-          <article class="card">
-            <div class="eyebrow">Treinos</div>
-            <div class="metric">7/9</div>
-            <p class="muted">78% concluído nesta fase.</p>
-          </article>
-          <article class="card dark">
-            <div class="eyebrow">Próxima conquista</div>
-            <div class="metric" style="color:var(--accent)">3K</div>
-            <p class="muted">Você já bateu. Compartilhe sua evolução.</p>
-            <button class="primary accent" data-action="shareAchievement">Compartilhar</button>
-          </article>
-        </div>
-
-        <div class="grid grid-2" style="margin-top:16px">
-          <article class="card">
-            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
-              <div>
-                <div class="eyebrow">Próximos passos</div>
-                <h3>Esta semana</h3>
-              </div>
-              <button class="secondary" data-nav="treinos">Abrir treinos</button>
-            </div>
-            <div class="timeline">
-              <div class="timeline-item done">
-                <div class="step">✓</div>
-                <div><strong>Terça • Corrida leve</strong><div class="muted">2,7 km • concluído</div></div>
-                <span class="chip">feito</span>
-              </div>
-              <div class="timeline-item">
-                <div class="step">11</div>
-                <div><strong>Quinta • Intervalado</strong><div class="muted">32 min • hoje</div></div>
-                <span class="chip">hoje</span>
-              </div>
-              <div class="timeline-item">
-                <div class="step">12</div>
-                <div><strong>Domingo • Longo leve</strong><div class="muted">3,5 km</div></div>
-                <span class="chip">próximo</span>
-              </div>
+              <div class="eyebrow">Sua jornada</div>
+              <h2>Complete seu perfil para começar.</h2>
+              <p class="muted">Seus próximos treinos aparecerão aqui quando um plano for definido.</p>
             </div>
           </article>
-
           <article class="card">
-            <div class="eyebrow">Seu ecossistema</div>
-            <h3>O esporte que combina com sua fase.</h3>
-            <p class="muted">Running está ativo. As outras modalidades aparecem como expansão futura.</p>
-            <div class="sport-option"><div><strong>🏃 Running</strong><div class="muted">Ativo agora</div></div><span class="chip">ATIVO</span></div>
-            <div class="sport-option"><div><strong>⚽ Altinha</strong><div class="muted">Em breve</div></div><span class="chip">LOCKED</span></div>
-            <div class="sport-option"><div><strong>🏐 Futevôlei</strong><div class="muted">Em breve</div></div><span class="chip">LOCKED</span></div>
-            <div class="sport-option"><div><strong>🏋️ Musculação</strong><div class="muted">Em breve</div></div><span class="chip">LOCKED</span></div>
+            <div class="eyebrow">Resumo</div>
+            <h3>Nenhuma atividade registrada</h3>
+            <p class="muted">Suas métricas serão calculadas a partir de atividades reais.</p>
           </article>
         </div>
       </section>
 
       <!-- TREINOS -->
       <section class="page" data-page="treinos">
-        <div class="card dark">
-          <div class="eyebrow">Programa atual</div>
-          <h2 style="font-size:38px;letter-spacing:-1.7px;margin:8px 0">ZERO → 5K</h2>
-          <p class="muted">8 semanas para transformar caminhada + trote em corrida contínua.</p>
-          <div class="progress dark-track"><span style="width:38%"></span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px"><span>Semana 3 de 8</span><span>38%</span></div>
-        </div>
-
-        <div class="week-tabs" id="weekTabs"></div>
-
-        <div class="grid grid-2">
-          <article class="card">
-            <div class="eyebrow">Semana selecionada</div>
-            <h3 id="weekTitle">Semana 3</h3>
-            <div class="list" id="workoutList"></div>
-          </article>
-          <article class="card">
-            <div class="eyebrow">Orientação</div>
-            <h3>Como executar</h3>
-            <p class="muted">Mantenha o esforço confortável. Você deve conseguir falar frases curtas durante o trote. Se sentir dor fora do esforço habitual, interrompa e procure orientação profissional.</p>
-            <div class="empty-preview">
-              <strong>Feedback pós-treino</strong>
-              <p style="margin:8px 0 0">No produto real, o aluno poderá classificar o treino como fácil, ideal ou pesado para ajudar o profissional a ajustar o próximo ciclo.</p>
-            </div>
-          </article>
-        </div>
+        <article class="card"><div class="eyebrow">Treinos</div><h2>Nenhum plano disponível</h2><p class="muted">Quando um plano for atribuído ao seu perfil, os treinos serão exibidos nesta área.</p></article>
       </section>
 
       <!-- PROGRESSO -->
       <section class="page" data-page="progresso">
-        <div class="grid grid-4">
-          <article class="card"><div class="eyebrow">Recorde</div><div class="metric">3,2 <small>km</small></div></article>
-          <article class="card"><div class="eyebrow">Melhor pace</div><div class="metric">6:19 <small>/km</small></div></article>
-          <article class="card"><div class="eyebrow">Mês</div><div class="metric">12,4 <small>km</small></div></article>
-          <article class="card"><div class="eyebrow">Consistência</div><div class="metric">78<small>%</small></div></article>
-        </div>
-
-        <div class="grid grid-2" style="margin-top:16px">
-          <article class="card">
-            <div class="eyebrow">Evolução de distância</div>
-            <h3>Últimos 7 treinos</h3>
-            <div class="chart">
-              <div class="bar" style="height:31%"><span>T1</span></div>
-              <div class="bar" style="height:40%"><span>T2</span></div>
-              <div class="bar" style="height:47%"><span>T3</span></div>
-              <div class="bar" style="height:54%"><span>T4</span></div>
-              <div class="bar" style="height:59%"><span>T5</span></div>
-              <div class="bar" style="height:64%"><span>T6</span></div>
-              <div class="bar active" style="height:78%"><span>T7</span></div>
-            </div>
-          </article>
-          <article class="card">
-            <div class="eyebrow">Histórico</div>
-            <h3>Treinos recentes</h3>
-            <div class="list">
-              <div class="list-row"><div class="left"><span class="status-dot ok"></span><div><strong>Corrida leve</strong><div class="muted">01 set • 3,2 km</div></div></div><strong>21:02</strong></div>
-              <div class="list-row"><div class="left"><span class="status-dot ok"></span><div><strong>Intervalado</strong><div class="muted">29 ago • 2,8 km</div></div></div><strong>19:34</strong></div>
-              <div class="list-row"><div class="left"><span class="status-dot ok"></span><div><strong>Corrida + caminhada</strong><div class="muted">27 ago • 2,4 km</div></div></div><strong>18:11</strong></div>
-            </div>
-          </article>
-        </div>
+        <article class="card"><div class="eyebrow">Progresso</div><h2>Ainda não há dados suficientes</h2><p class="muted">O histórico e as métricas aparecerão após o registro de atividades.</p></article>
       </section>
 
       <!-- OBJETIVOS -->
       <section class="page" data-page="objetivos">
-        <div class="grid grid-2">
-          <article class="card goal-card">
-            <div class="eyebrow">Objetivo principal</div>
-            <div class="goal-top">
-              <div>
-                <h2 style="font-size:38px;margin:8px 0 5px;letter-spacing:-1.7px">Completar 5 km</h2>
-                <div class="muted">Prazo: 30 de outubro</div>
-              </div>
-              <div class="circle-progress"></div>
-            </div>
-            <div class="progress"><span style="width:64%"></span></div>
-            <div style="display:flex;justify-content:space-between;font-weight:800"><span>3,2 km</span><span>5 km</span></div>
-            <button class="primary" data-action="editGoal">Editar objetivo</button>
-          </article>
-
-          <article class="card">
-            <div class="eyebrow">Próxima fase</div>
-            <h3>Depois dos 5K</h3>
-            <p class="muted">O app pode sugerir uma nova jornada conforme seu histórico e seu objetivo.</p>
-            <div class="list">
-              <div class="list-row"><div class="left"><span class="status-dot next"></span><div><strong>5K → 10K</strong><div class="muted">Progressão de distância</div></div></div><span>→</span></div>
-              <div class="list-row"><div class="left"><span class="status-dot warn"></span><div><strong>5K mais rápido</strong><div class="muted">Foco em ritmo</div></div></div><span>→</span></div>
-            </div>
-          </article>
-        </div>
-        <div style="margin-top:16px">
-          <button class="primary accent" data-action="newGoal">+ Adicionar objetivo futuro</button>
-        </div>
+        <article class="card"><div class="eyebrow">Objetivos</div><h2>Nenhum objetivo definido</h2><p class="muted">Os objetivos cadastrados para sua jornada serão apresentados aqui.</p></article>
       </section>
 
       <!-- CONQUISTAS -->
       <section class="page" data-page="conquistas">
-        <div class="achievement-grid">
-          <article class="achievement">
-            <div class="medal">⚡</div>
-            <div><div class="eyebrow">Desbloqueada</div><h3>Primeiro treino</h3><p class="muted">Você começou. Esse era o passo mais importante.</p></div>
-          </article>
-          <article class="achievement">
-            <div class="medal">🏃</div>
-            <div><div class="eyebrow">Desbloqueada</div><h3>Primeiro 1K</h3><p class="muted">Primeiro quilômetro completo registrado.</p></div>
-          </article>
-          <article class="achievement">
-            <div class="medal">🔥</div>
-            <div><div class="eyebrow">Desbloqueada</div><h3>3 treinos seguidos</h3><p class="muted">Consistência começa a virar identidade.</p></div>
-          </article>
-          <article class="achievement">
-            <div class="medal">3K</div>
-            <div><div class="eyebrow">Desbloqueada</div><h3>First 3K</h3><p class="muted">Seu novo recorde pessoal.</p><button class="secondary" data-action="shareAchievement">Compartilhar</button></div>
-          </article>
-          <article class="achievement locked">
-            <div class="medal">5K</div>
-            <div><div class="eyebrow">Bloqueada</div><h3>First 5K</h3><p class="muted">Complete 5 km em uma atividade.</p></div>
-          </article>
-          <article class="achievement locked">
-            <div class="medal">50</div>
-            <div><div class="eyebrow">Bloqueada</div><h3>50 km Club</h3><p class="muted">Some 50 km em atividades.</p></div>
-          </article>
-        </div>
+        <article class="card"><div class="eyebrow">Conquistas</div><h2>Nenhuma conquista registrada</h2><p class="muted">Conquistas serão liberadas com base em atividades reais.</p></article>
       </section>
 
       <!-- EVENTOS -->
       <section class="page" data-page="eventos">
-        <div class="card" style="margin-bottom:16px">
-          <div class="eyebrow">Lifestyle & comunidade</div>
-          <h2 style="font-size:38px;letter-spacing:-1.8px;margin:8px 0">Corra por algo além do cronômetro.</h2>
-          <p class="muted">Esta área representa o diferencial social do ecossistema: eventos por perfil, momento e estilo de vida.</p>
-        </div>
-
-        <div class="event-grid">
-          <article class="event blue">
-            <span class="tag">18+ • SOCIAL</span>
-            <h3>Blue Sock Run</h3>
-            <p>Corrida leve + café para solteiros que querem conhecer gente nova.</p>
-            <button class="primary accent" data-action="eventDetails" data-event="Blue Sock Run">Ver evento</button>
-          </article>
-          <article class="event couple">
-            <span class="tag">CASAIS</span>
-            <h3>Couples 5K</h3>
-            <p>Uma experiência esportiva para correr e conquistar a meta juntos.</p>
-            <button class="primary accent" data-action="eventDetails" data-event="Couples 5K">Ver evento</button>
-          </article>
-          <article class="event sunset">
-            <span class="tag">COMMUNITY</span>
-            <h3>Sunset Run</h3>
-            <p>Corrida, música, pôr do sol e comunidade para fechar o domingo.</p>
-            <button class="primary accent" data-action="eventDetails" data-event="Sunset Run">Ver evento</button>
-          </article>
-        </div>
+        <article class="card"><div class="eyebrow">Eventos</div><h2>Nenhum evento disponível</h2><p class="muted">Eventos publicados para o seu perfil aparecerão nesta área.</p></article>
       </section>
 
       <!-- PERFIL -->
       <section class="page" data-page="perfil">
         <div class="profile-layout">
           <article class="card profile-card">
-            <div class="profile-avatar">L</div>
-            <h2 style="margin:0">Lucas</h2>
-            <p class="muted">Running • Starter</p>
-            <div class="chips" style="justify-content:center">
-              <span class="chip">Meta 5K</span>
-              <span class="chip">7 treinos</span>
-            </div>
-            <button class="secondary" style="margin-top:18px;width:100%" data-action="editProfile">Editar perfil</button>
+            <div class="profile-avatar" data-user-initials>U</div>
+            <h2 style="margin:0" data-user-name>Usuário</h2>
+            <p class="muted" data-user-email></p>
+            <button class="secondary profile-logout" id="logoutBtn" type="button">Sair da conta</button>
           </article>
 
           <article class="card">
             <div class="eyebrow">Dados pessoais</div>
             <h3>Seu perfil esportivo</h3>
-            <div class="grid grid-2" style="margin-top:16px">
-              <div class="field"><label>Nome</label><input value="Lucas" disabled /></div>
-              <div class="field"><label>Idade</label><input value="24 anos" disabled /></div>
-              <div class="field"><label>Altura</label><input value="1,78 m" disabled /></div>
-              <div class="field"><label>Peso atual</label><input value="82 kg" disabled /></div>
-            </div>
-
-            <div class="eyebrow" style="margin-top:18px">Preferências sociais</div>
-            <div class="sport-option"><div><strong>Eventos sociais</strong><div class="muted">Receber eventos de comunidade.</div></div><button class="switch on" data-action="toggle"></button></div>
-            <div class="sport-option"><div><strong>Singles Run</strong><div class="muted">Eventos para solteiros.</div></div><button class="switch on" data-action="toggle"></button></div>
-            <div class="sport-option"><div><strong>Couples Run</strong><div class="muted">Eventos para casais.</div></div><button class="switch" data-action="toggle"></button></div>
+            <form id="profileForm" class="grid grid-2" style="margin-top:16px">
+              <div class="field"><label>Nome</label><input data-user-name-input value="" disabled /></div>
+              <div class="field"><label>E-mail</label><input data-user-email-input value="" disabled /></div>
+              <div class="field"><label for="profileHeight">Altura em centímetros</label><input id="profileHeight" name="height" type="number" min="80" max="250" step="1" placeholder="Exemplo: 175" required /></div>
+              <div class="field"><label for="profileWeight">Peso atual em quilogramas</label><input id="profileWeight" name="weight" type="number" min="25" max="350" step="0.1" placeholder="Exemplo: 72,5" required /></div>
+              <div style="grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <button class="primary accent" id="saveProfileBtn" type="submit">Salvar dados</button>
+                <p class="muted" id="profileStatus" role="status" aria-live="polite" style="margin:0"></p>
+              </div>
+            </form>
           </article>
         </div>
       </section>
@@ -811,13 +652,13 @@ git bra<!DOCTYPE html>
 
   <script>
     const pages = {
-      home:{label:"Home",icon:"⌂",subtitle:"Continue evoluindo um treino de cada vez."},
-      treinos:{label:"Treinos",icon:"▶",subtitle:"Seu programa, semana por semana."},
-      progresso:{label:"Progresso",icon:"↗",subtitle:"Veja o que já mudou desde o primeiro treino."},
-      objetivos:{label:"Objetivos",icon:"◎",subtitle:"Metas claras tornam evolução visível."},
-      conquistas:{label:"Conquistas",icon:"★",subtitle:"Cada marco é uma prova de consistência."},
-      eventos:{label:"Eventos",icon:"◉",subtitle:"Lifestyle, comunidade e novas experiências."},
-      perfil:{label:"Perfil",icon:"●",subtitle:"Preferências, dados e modalidades."}
+      home:{label:"Home",subtitle:"Acompanhe sua jornada esportiva."},
+      treinos:{label:"Treinos",subtitle:"Consulte seus planos e atividades."},
+      progresso:{label:"Progresso",subtitle:"Acompanhe sua evolução com dados reais."},
+      objetivos:{label:"Objetivos",subtitle:"Consulte as metas definidas para sua jornada."},
+      conquistas:{label:"Conquistas",subtitle:"Acompanhe os marcos alcançados."},
+      eventos:{label:"Eventos",subtitle:"Consulte os eventos disponíveis."},
+      perfil:{label:"Perfil",subtitle:"Consulte seus dados pessoais."}
     };
 
     const svgIcon = {
@@ -861,192 +702,14 @@ git bra<!DOCTYPE html>
     document.addEventListener("click",e=>{
       const nav=e.target.closest("[data-nav]");
       if(nav){navigate(nav.dataset.nav);return;}
-      const action=e.target.closest("[data-action]");
-      if(action) runAction(action.dataset.action,action);
     });
 
-    document.getElementById("loginBtn").addEventListener("click",()=>{
-      document.getElementById("loginScreen").classList.add("hidden");
-      document.getElementById("appShell").classList.remove("hidden");
-      showToast("Bem-vindo, Lucas. Seu próximo treino está pronto.");
-    });
-
-    document.getElementById("notifyBtn").addEventListener("click",()=>showToast("Hoje • Treino #11 disponível às 18h."));
+    document.getElementById("notifyBtn").addEventListener("click",()=>showToast("Nenhuma notificação disponível."));
     document.addEventListener("keydown",e=>{
       if(e.key==="Enter" && !document.getElementById("loginScreen").classList.contains("hidden")){
         document.getElementById("loginBtn").click();
       }
-      if(e.key==="Escape") closeModal();
     });
-
-    const weeks = {
-      1:[
-        ["Treino #1","Caminhada + trote","24 min","done"],
-        ["Treino #2","Caminhada ativa","28 min","done"],
-        ["Treino #3","Trote leve","25 min","done"]
-      ],
-      2:[
-        ["Treino #4","Intervalado leve","27 min","done"],
-        ["Treino #5","Corrida + caminhada","30 min","done"],
-        ["Treino #6","Longo leve","2,4 km","done"]
-      ],
-      3:[
-        ["Treino #7","Corrida leve","2,7 km","done"],
-        ["Treino #8","Intervalado","32 min","next"],
-        ["Treino #9","Longo leve","3,5 km","warn"]
-      ],
-      4:[
-        ["Treino #10","Corrida contínua","3,2 km",""],
-        ["Treino #11","Intervalado progressivo","35 min",""],
-        ["Treino #12","Longo leve","4 km",""]
-      ],
-      5:[
-        ["Treino #13","Corrida contínua","3,7 km",""],
-        ["Treino #14","Técnica + ritmo","36 min",""],
-        ["Treino #15","Longo leve","4,3 km",""]
-      ],
-      6:[
-        ["Treino #16","Corrida leve","4 km",""],
-        ["Treino #17","Intervalado","38 min",""],
-        ["Treino #18","Longo","4,6 km",""]
-      ],
-      7:[
-        ["Treino #19","Corrida contínua","4,4 km",""],
-        ["Treino #20","Ritmo controlado","30 min",""],
-        ["Treino #21","Simulado","4,8 km",""]
-      ],
-      8:[
-        ["Treino #22","Ativação","25 min",""],
-        ["Treino #23","Leve","20 min",""],
-        ["Treino #24","FIRST 5K","5 km",""]
-      ]
-    };
-
-    const weekTabs=document.getElementById("weekTabs");
-    for(let i=1;i<=8;i++){
-      const b=document.createElement("button");
-      b.className="week-btn"+(i===3?" active":"");
-      b.textContent=`Semana ${i}`;
-      b.onclick=()=>renderWeek(i,b);
-      weekTabs.appendChild(b);
-    }
-
-    function renderWeek(n,button){
-      document.querySelectorAll(".week-btn").forEach(x=>x.classList.remove("active"));
-      if(button) button.classList.add("active");
-      document.getElementById("weekTitle").textContent=`Semana ${n}`;
-      const list=document.getElementById("workoutList");
-      list.innerHTML="";
-      weeks[n].forEach((w,idx)=>{
-        const row=document.createElement("div");
-        row.className="list-row";
-        row.innerHTML=`<div class="left"><span class="status-dot ${w[3]}"></span><div><strong>${w[0]} • ${w[1]}</strong><div class="muted">${w[2]}</div></div></div>
-          <button class="secondary" data-action="${n===3&&idx===1?'startWorkout':'workoutInfo'}">${n===3&&idx===1?'Começar':'Detalhes'}</button>`;
-        list.appendChild(row);
-      });
-    }
-    renderWeek(3,document.querySelectorAll(".week-btn")[2]);
-
-    function openModal(content){
-      const wrap=document.getElementById("modalWrap");
-      wrap.innerHTML=`<div class="modal">${content}</div>`;
-      wrap.classList.remove("hidden");
-      wrap.addEventListener("click",ev=>{if(ev.target===wrap)closeModal();},{once:true});
-    }
-    function closeModal(){document.getElementById("modalWrap").classList.add("hidden")}
-
-    let timerInterval=null, seconds=0;
-    function startTimer(){
-      seconds=0;
-      clearInterval(timerInterval);
-      timerInterval=setInterval(()=>{
-        seconds++;
-        const m=String(Math.floor(seconds/60)).padStart(2,"0");
-        const s=String(seconds%60).padStart(2,"0");
-        const el=document.getElementById("timer");
-        if(el) el.textContent=`${m}:${s}`;
-        else clearInterval(timerInterval);
-      },1000);
-    }
-
-    function runAction(action,el){
-      if(action==="startWorkout"){
-        openModal(`
-          <div class="modal-head"><div><div class="eyebrow">Treino #11</div><h3>Intervalado</h3></div><button class="close-btn" onclick="closeModal()">×</button></div>
-          <div class="timer" id="timer">00:00</div>
-          <div class="timer-sub">Sessão demonstrativa</div>
-          <div class="interval"><span>Aquecimento</span><strong>5 min</strong></div>
-          <div class="interval"><span>2 min trote + 1 min caminhada</span><strong>× 7</strong></div>
-          <div class="interval"><span>Desaquecimento</span><strong>6 min</strong></div>
-          <div class="modal-actions"><button class="secondary" onclick="closeModal()">Cancelar</button><button class="primary accent" onclick="finishWorkout()">Concluir treino</button></div>
-        `);
-        startTimer();
-      }
-
-      if(action==="workoutInfo"){
-        openModal(`<div class="modal-head"><h3>Detalhes do treino</h3><button class="close-btn" onclick="closeModal()">×</button></div><p class="muted">No app real, esta tela traria aquecimento, blocos, descanso, instruções do profissional e feedback pós-treino.</p><div class="modal-actions"><button class="primary" onclick="closeModal()">Entendi</button></div>`);
-      }
-
-      if(action==="shareAchievement"){
-        openModal(`
-          <div class="modal-head"><div><div class="eyebrow">Story Card</div><h3>FIRST 3K 🏃</h3></div><button class="close-btn" onclick="closeModal()">×</button></div>
-          <div style="background:#0b0d0f;color:white;border-radius:22px;padding:28px;margin-top:18px">
-            <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
-            <div style="font-size:56px;font-weight:950;letter-spacing:-3px;margin-top:70px">3.00 KM</div>
-            <div style="font-size:22px;color:#bcc5be">21:02 • novo recorde pessoal</div>
-            <div style="margin-top:70px;color:var(--accent);font-weight:900">FIRST 3K UNLOCKED</div>
-          </div>
-          <div class="modal-actions"><button class="secondary" onclick="copyShare()">Copiar texto</button><button class="primary accent" onclick="copyShare()">Compartilhar</button></div>
-        `);
-      }
-
-      if(action==="editGoal" || action==="newGoal"){
-        openModal(`
-          <div class="modal-head"><h3>${action==="newGoal"?"Novo objetivo":"Editar objetivo"}</h3><button class="close-btn" onclick="closeModal()">×</button></div>
-          <div class="field" style="margin-top:18px"><label>Objetivo</label><select><option>Completar 5 km</option><option>Completar 10 km</option><option>Melhorar pace nos 5 km</option></select></div>
-          <div class="field"><label>Prazo</label><input type="date" value="2026-10-30"></div>
-          <div class="field"><label>Observação</label><textarea rows="3">Quero conseguir correr sem caminhar até o final.</textarea></div>
-          <div class="modal-actions"><button class="secondary" onclick="closeModal()">Cancelar</button><button class="primary accent" onclick="saveGeneric('Objetivo salvo.')">Salvar objetivo</button></div>
-        `);
-      }
-
-      if(action==="editProfile"){
-        openModal(`
-          <div class="modal-head"><h3>Editar perfil</h3><button class="close-btn" onclick="closeModal()">×</button></div>
-          <div class="grid grid-2" style="margin-top:18px">
-            <div class="field"><label>Peso</label><input value="82"></div>
-            <div class="field"><label>Altura</label><input value="178"></div>
-          </div>
-          <div class="field"><label>Dias disponíveis</label><select><option>3 dias por semana</option><option>4 dias por semana</option><option>5 dias por semana</option></select></div>
-          <div class="modal-actions"><button class="secondary" onclick="closeModal()">Cancelar</button><button class="primary accent" onclick="saveGeneric('Perfil atualizado.')">Salvar</button></div>
-        `);
-      }
-
-      if(action==="toggle"){el.classList.toggle("on")}
-
-      if(action==="eventPreview"){navigate("eventos")}
-
-      if(action==="eventDetails"){
-        openModal(`
-          <div class="modal-head"><div><div class="eyebrow">Evento demonstrativo</div><h3>${el.dataset.event}</h3></div><button class="close-btn" onclick="closeModal()">×</button></div>
-          <p class="muted">Domingo • 08h • Rio de Janeiro</p>
-          <div class="empty-preview"><strong>Área futura de comunidade</strong><p style="margin:7px 0 0">Lista de participantes, inscrição, ponto de encontro, nível recomendado e benefícios do evento.</p></div>
-          <div class="modal-actions"><button class="primary accent" onclick="saveGeneric('Interesse registrado no evento.')">Tenho interesse</button></div>
-        `);
-      }
-    }
-
-    function finishWorkout(){
-      clearInterval(timerInterval);
-      closeModal();
-      showToast("Treino concluído! Sequência atualizada para 5 treinos 🔥");
-    }
-    function copyShare(){
-      const text="FIRST 3K 🏃 — 3.00 KM • novo recorde pessoal • #RUNLIFE";
-      if(navigator.clipboard) navigator.clipboard.writeText(text);
-      closeModal();showToast("Texto de compartilhamento copiado.");
-    }
-    function saveGeneric(msg){closeModal();showToast(msg)}
     function showToast(msg){
       const t=document.getElementById("toast");
       t.textContent=msg;t.classList.add("show");
