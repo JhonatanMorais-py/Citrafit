@@ -13,6 +13,12 @@ const mimeTypes = new Map([
   [".html", "text/html; charset=utf-8"],
   [".css", "text/css; charset=utf-8"],
   [".js", "text/javascript; charset=utf-8"],
+  [".svg", "image/svg+xml"],
+  [".jpg", "image/jpeg"],
+  [".jpeg", "image/jpeg"],
+  [".webp", "image/webp"],
+  [".png", "image/png"],
+  [".ttf", "font/ttf"],
 ]);
 
 export async function serveStatic(pathname, response) {
@@ -32,7 +38,7 @@ export async function serveStatic(pathname, response) {
     response.writeHead(200, {
       "Content-Type": mimeTypes.get(extname(filePath)) || "application/octet-stream",
       "X-Content-Type-Options": "nosniff",
-      "Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'",
+      "Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
     });
     createReadStream(filePath).pipe(response);
     return true;

@@ -15,3 +15,13 @@ coverage/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Android local tools and build output
+.tools/
+.gradle/
+android/.gradle/
+android/local.properties
+android/**/build/
+*.jks
+*.keystore
+!android/gradle/wrapper/gradle-wrapper.jar

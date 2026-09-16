@@ -1,33 +1,33 @@
 import { env } from "../../config/env.js";
-import { readCookies } from "../../http/cookies.js";
+import { accessToken as requestToken, isNativeRequest, sessionCookies } from "../../http/session.js";
 
 const clearSessionCookies = (response) => {
-  response.setHeader("Set-Cookie", [
-    "rl_access_token=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0",
-    "rl_refresh_token=; HttpOnly; SameSite=Strict; Path=/api; Max-Age=0",
-  ]);
+  sessionCookies(response);
 };
 
 export async function logoutController(request, response, sendJson) {
-  const cookies = readCookies(request);
-  const accessToken = cookies.rl_access_token;
+  const accessToken = requestToken(request);
+  let remoteFailed = false;
 
   try {
     if (accessToken) {
       const baseUrl = env.supabaseUrl.replace(/\/+$/, "");
-      await fetch(`${baseUrl}/auth/v1/logout`, {
+      const remote = await fetch(`${baseUrl}/auth/v1/logout?scope=local`, {
         method: "POST",
         headers: {
           apikey: env.supabaseServiceRoleKey,
           Authorization: `Bearer ${accessToken}`,
         },
+        signal: AbortSignal.timeout(15000),
       });
+      remoteFailed = !remote.ok && remote.status !== 401 && remote.status !== 403;
     }
   } catch {
+    remoteFailed = true;
     console.error("Não foi possível encerrar a sessão remota.");
   } finally {
-    clearSessionCookies(response);
+    if (!isNativeRequest(request)) clearSessionCookies(response);
   }
 
-  return sendJson(response, 200, { message: "Sessão encerrada com segurança." });
+  return sendJson(response, 200, { message: "Sessão local encerrada.", remoteFailed });
 }

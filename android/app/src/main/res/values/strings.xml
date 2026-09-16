@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">RUN LIFE Experimental</string>
+    <string name="title_activity_main">RUN LIFE Experimental</string>
+    <string name="package_name">com.citrafit.experimental</string>
+    <string name="custom_url_scheme">com.citrafit.experimental</string>
+</resources>

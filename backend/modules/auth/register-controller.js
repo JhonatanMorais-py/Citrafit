@@ -2,14 +2,17 @@ import { registerUser } from "./register-service.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function validate(payload) {
+export function validateRegistration(payload) {
   const name = typeof payload.name === "string" ? payload.name.trim() : "";
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
   const password = typeof payload.password === "string" ? payload.password : "";
 
   if (name.length < 3 || name.length > 120) return { error: "Nome inválido." };
   if (!EMAIL_PATTERN.test(email) || email.length > 254) return { error: "E-mail inválido." };
-  if (password.length < 8 || password.length > 72) return { error: "A senha deve ter entre 8 e 72 caracteres." };
+  if (password.length < 8 || password.length > 72 ||
+      !/\p{Lu}/u.test(password) || !/[^\p{L}\p{N}\s]/u.test(password)) {
+    return { error: "A senha deve ter entre 8 e 72 caracteres, uma letra maiúscula e um caractere especial." };
+  }
 
   return { value: { name, email, password } };
 }
@@ -17,7 +20,7 @@ function validate(payload) {
 export async function registerController(request, response, readJson, sendJson) {
   try {
     const payload = await readJson(request);
-    const validation = validate(payload);
+    const validation = validateRegistration(payload);
 
     if (validation.error) {
       return sendJson(response, 422, { error: validation.error });

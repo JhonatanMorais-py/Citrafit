@@ -1,6 +1,7 @@
 const WINDOW_MS = 15 * 60 * 1000;
 const registrationAttempts = new Map();
 const loginAttempts = new Map();
+const sessionAttempts = new Map();
 
 function allow(request, attempts, maxAttempts) {
   const identifier = String(request.socket.remoteAddress || "unknown");
@@ -23,4 +24,8 @@ export function allowRegistration(request) {
 
 export function allowLogin(request) {
   return allow(request, loginAttempts, 10);
+}
+
+export function allowSession(request) {
+  return allow(request, sessionAttempts, 120);
 }

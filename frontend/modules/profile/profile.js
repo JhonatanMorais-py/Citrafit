@@ -24,7 +24,7 @@
     saveButton.textContent = "Salvando";
 
     try {
-      const response = await fetch("/api/perfil", {
+      const result = await window.RunlifeApi.request("/api/perfil", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -32,8 +32,6 @@
           weight: Number(weightInput.value),
         }),
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Não foi possível salvar seus dados.");
 
       heightInput.value = result.profile.height;
       weightInput.value = result.profile.weight;
@@ -51,8 +49,7 @@
     logoutButton.textContent = "Saindo";
 
     try {
-      const response = await fetch("/api/logout", { method: "POST" });
-      if (!response.ok) throw new Error("Não foi possível encerrar a sessão.");
+      const result = await window.RunlifeApi.logout();
 
       form.reset();
       document.querySelectorAll("[data-user-name]").forEach((element) => {
@@ -67,6 +64,8 @@
       document.getElementById("appShell").classList.add("hidden");
       document.getElementById("loginScreen").classList.remove("hidden");
       document.getElementById("emailInput").focus();
+      window.navigate("home");
+      if (result.remoteFailed) window.showToast?.("Você saiu deste aplicativo. Não foi possível confirmar o encerramento no servidor.");
     } catch (error) {
       status.textContent = error.message;
     } finally {

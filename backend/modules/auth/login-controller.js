@@ -1,4 +1,5 @@
 import { authenticateUser } from "./login-service.js";
+import { deliverSession } from "../../http/session.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -17,13 +18,7 @@ export async function loginController(request, response, readJson, sendJson) {
       return sendJson(response, 401, { error: "E-mail ou senha incorretos." });
     }
 
-    const maxAge = Number(result.session.expiresIn || 3600);
-    response.setHeader("Set-Cookie", [
-      `rl_access_token=${encodeURIComponent(result.session.accessToken)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}`,
-      `rl_refresh_token=${encodeURIComponent(result.session.refreshToken)}; HttpOnly; SameSite=Strict; Path=/api; Max-Age=2592000`,
-    ]);
-
-    return sendJson(response, 200, { user: result.user });
+    return sendJson(response, 200, deliverSession(request, response, result));
   } catch (error) {
     console.error("Falha interna no login.", {
       code: error.code || "UNKNOWN",

@@ -1,0 +1,7 @@
+{
+  "appId": "com.citrafit.experimental",
+  "appName": "RUN LIFE Experimental",
+  "webDir": "dist/mobile",
+  "server": { "androidScheme": "https", "cleartext": false },
+  "android": { "allowMixedContent": false }
+}

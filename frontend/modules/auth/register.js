@@ -24,6 +24,9 @@
     if (error) error.textContent = message;
   };
 
+  const validPassword = (password) => password.length >= 8 && password.length <= 72 &&
+    /\p{Lu}/u.test(password) && /[^\p{L}\p{N}\s]/u.test(password);
+
   const validateForm = () => {
     const name = document.getElementById("registerName");
     const email = document.getElementById("registerEmail");
@@ -33,7 +36,7 @@
 
     showError(name, name.value.trim().length >= 3 ? "" : "Informe seu nome completo.");
     showError(email, email.validity.valid ? "" : "Informe um e-mail válido.");
-    showError(password, password.value.length >= 8 ? "" : "A senha deve ter pelo menos 8 caracteres.");
+    showError(password, validPassword(password.value) ? "" : "Use de 8 a 72 caracteres, com uma letra maiúscula e um caractere especial.");
     showError(confirmation, confirmation.value && confirmation.value === password.value ? "" : "As senhas precisam ser iguais.");
     showError(privacy, privacy.checked ? "" : "Confirme os termos para continuar.");
 
@@ -63,17 +66,11 @@
     submitButton.textContent = "Criando conta";
 
     try {
-      const response = await fetch("/api/cadastro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const result = await window.RunlifeApi.register({
           name: document.getElementById("registerName").value.trim(),
           email,
           password: document.getElementById("registerPassword").value,
-        }),
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Não foi possível criar sua conta.");
 
       registerForm.reset();
       registerStatus.textContent = result.message;

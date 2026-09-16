@@ -1,0 +1,94 @@
+/* Shared translucent treatment. Icon strokes stay opaque for readability. */
+:root {
+  --glass-fill: linear-gradient(145deg, #ffffff20, #ffffff09);
+  --glass-selected: linear-gradient(145deg, #ffffff32, #ffffff14);
+  --glass-edge: #ffffff26;
+  --glass-shine: inset 0 1px 0 #ffffff25, inset 0 -1px 0 #ffffff08;
+}
+html[data-theme=light] {
+  --glass-fill: linear-gradient(145deg, #ffffff80, #6c796213);
+  --glass-selected: linear-gradient(145deg, #ffffffc0, #6c79622b);
+  --glass-edge: #74806b38;
+  --glass-shine: inset 0 1px 0 #ffffffcc, inset 0 -1px 0 #17230008;
+}
+/* Compact inline icons retain their original footprint. */
+body i:has(>svg):not(.bottom-nav i) {
+  background: var(--glass-fill);
+  border-radius: 7px;
+  box-shadow: var(--glass-shine);
+}
+/* Existing larger icon holders get glass without another nested bubble. */
+body :is(.dialog-emblem,.benefit>i,.partner-path>i,.earning-grid article>i,
+ .partner-levels article>i,.club-benefit-card>i,.unlock-track article>i,
+ .lesson-overlay>i,.play-symbol,.event-lock,.live-play,.member-avatar) {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shine);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: inherit;
+}
+body :is(.dialog-emblem,.member-avatar,.play-symbol,.event-lock,.live-play)>i {
+  background: none; box-shadow: none;
+}
+/* Interactive icon surfaces: integrated glass at rest and on selection. */
+body :is(.icon-button,.profile-link,.nav-item,.sport-tile,.button,
+ .filter-chip,.post-actions button,.composer-actions button,.live-reactions button,
+ .live-reminder,.map-locate-button,.map-adjust-button,.live-comment-box button,
+ .fake-link button,.record-button) {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shine);
+  color: inherit;
+  transition: background .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+body :is(.icon-button,.profile-link,.button,.map-locate-button,.map-adjust-button,
+ .record-button,.live-play,.event-lock) {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+body :is(.icon-button,.profile-link,.nav-item,.sport-tile,.button,
+ .filter-chip,.post-actions button,.composer-actions button,.live-reactions button,
+ .live-reminder,.map-locate-button,.map-adjust-button,.live-comment-box button,
+ .fake-link button,.record-button)>i {
+  background: none; box-shadow: none;
+}
+body :is(.nav-item,.sport-tile,.button,.live-reactions button):hover {
+  transform: none;
+}
+body :is(.nav-item,.filter-chip,.map-adjust-button,.button).active,
+body :is(button,a):not(.bottom-nav a):has(svg):is(:active,:focus-visible),
+body :is(button,a):not(.bottom-nav a):has(svg)[aria-pressed=true] {
+  background: var(--glass-selected);
+  box-shadow: var(--glass-shine);
+  border-color: var(--glass-edge);
+}
+@media(hover:hover) {
+  body :is(.icon-button,.profile-link,.nav-item,.sport-tile,.button,
+   .filter-chip,.post-actions button,.composer-actions button,.live-reactions button,
+   .live-reminder,.map-locate-button,.map-adjust-button):hover {
+    background: var(--glass-selected);
+    box-shadow: var(--glass-shine);
+  }
+}
+/* Readable icons over photographs and on the lime Club surfaces. */
+body :is(.training-image,.event-card-image,.live-thumb,.lesson-overlay,
+ .hero-copy,.live-stage,.map-controls) {
+  --glass-fill: linear-gradient(145deg,#ffffff25,#10182066);
+  --glass-selected: linear-gradient(145deg,#ffffff40,#10182088);
+  --glass-edge: #ffffff38;
+  --glass-shine: inset 0 1px 0 #ffffff35;
+}
+body :is(.play-symbol,.event-lock,.live-play,.map-locate-button,.map-adjust-button) { color:#fff; }
+body :is(.club-hero,.club-rewards,.feed-challenge,.affiliate-code-card) {
+  --glass-fill: linear-gradient(145deg,#ffffff42,#1723000e);
+  --glass-selected: linear-gradient(145deg,#ffffff66,#17230022);
+  --glass-edge: #17230033;
+}
+body .post-actions button.liked { color:#e94268; background:var(--glass-selected); }
+body .record-button.is-recording { color:#ff4768; border-color:#ff476877; background:var(--glass-selected); }
+body :is(button,a):focus-visible { outline:2px solid currentColor; outline-offset:3px; }
+body button:disabled { opacity:.55; }
+@media(prefers-reduced-motion:reduce) {
+  body :is(button,a):has(svg) { transition:none; }
+}

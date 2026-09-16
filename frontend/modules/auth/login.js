@@ -34,6 +34,7 @@
   };
 
   const login = async () => {
+    if (loginButton.disabled) return;
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     loginStatus.textContent = "";
@@ -47,19 +48,11 @@
     loginButton.textContent = "Entrando";
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Não foi possível entrar agora.");
+      const result = await window.RunlifeApi.login({ email, password });
 
       applyUser(result.user);
       passwordInput.value = "";
-      document.getElementById("loginScreen").classList.add("hidden");
-      document.getElementById("appShell").classList.remove("hidden");
-      window.showToast?.(`Bem-vindo, ${result.user.name}. Seu próximo treino está pronto.`);
+      window.location.assign("frontend/app/index.html");
     } catch (error) {
       loginStatus.textContent = error.message;
     } finally {
@@ -69,4 +62,25 @@
   };
 
   loginButton.addEventListener("click", login);
+  window.addEventListener("runlife:session-expired", () => {
+    document.getElementById("appShell").classList.add("hidden");
+    document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("profileForm").reset();
+    document.querySelectorAll("[data-user-name],[data-user-email],[data-user-initials]").forEach(element => { element.textContent = ""; });
+    loginStatus.textContent = "Sua sessão expirou. Entre novamente.";
+  });
+  // Defer until all deferred profile listeners have been registered.
+  document.addEventListener("DOMContentLoaded", async () => {
+    // On the Web, opening the public address must always present the login
+    // screen. Native apps may still restore their protected persisted session.
+    if (window.Capacitor?.isNativePlatform() !== true) return;
+    loginButton.disabled = true;
+    try {
+      const result = await window.RunlifeApi.restore();
+      applyUser(result.user);
+      window.location.assign("frontend/app/index.html");
+    } catch (error) {
+      loginStatus.textContent = error.status === 401 ? "" : error.message;
+    } finally { loginButton.disabled = false; }
+  });
 })();

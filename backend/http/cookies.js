@@ -9,7 +9,8 @@ export function readCookies(request) {
         const separator = item.indexOf("=");
         const name = separator >= 0 ? item.slice(0, separator) : item;
         const value = separator >= 0 ? item.slice(separator + 1) : "";
-        return [name, decodeURIComponent(value)];
+        try { return [name, decodeURIComponent(value)]; }
+        catch { return [name, ""]; }
       }),
   );
 }

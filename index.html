@@ -2,24 +2,29 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0d0f" />
-  <title>RUN/LIFE</title>
+  <title>Citra Fit</title>
   <link rel="stylesheet" href="frontend/modules/auth/register.css" />
+  <!-- native-bootstrap -->
+  <script src="frontend/config/runtime.js" defer></script>
+  <script src="frontend/core/api.js" defer></script>
   <script src="frontend/modules/auth/register.js" defer></script>
   <script src="frontend/modules/auth/login.js" defer></script>
   <script src="frontend/modules/profile/profile.js" defer></script>
   <style>
+    @font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:swap;src:url('frontend/app/assets/inter.ttf') format('truetype')}
+    @font-face{font-family:Sora;font-style:normal;font-weight:400 800;font-display:swap;src:url('frontend/app/assets/sora.ttf') format('truetype')}
     :root{
-      --bg:#f4f5f2;
-      --surface:#ffffff;
-      --surface-2:#eef0ec;
-      --ink:#101312;
-      --muted:#66706a;
-      --line:#dfe4df;
-      --accent:#b9ff3b;
-      --accent-ink:#152000;
-      --dark:#0b0d0f;
+      --bg:#f3f0e8;
+      --surface:#fffefa;
+      --surface-2:#e9e7df;
+      --ink:#171914;
+      --muted:#65675e;
+      --line:#d5d8ca;
+      --accent:#c6ff3d;
+      --accent-ink:#162000;
+      --dark:#0f1419;
       --danger:#ff6b6b;
       --radius:24px;
       --shadow:0 14px 40px rgba(20,25,22,.10);
@@ -47,8 +52,8 @@
       display:grid;
       place-items:center;
       background:
-        radial-gradient(circle at 80% 15%, rgba(185,255,59,.25), transparent 25%),
-        radial-gradient(circle at 10% 90%, rgba(185,255,59,.12), transparent 20%),
+        radial-gradient(circle at 80% 15%, rgba(198,255,61,.25), transparent 25%),
+        radial-gradient(circle at 10% 90%, rgba(198,255,61,.12), transparent 20%),
         #0b0d0f;
       padding:24px;
     }
@@ -74,13 +79,17 @@
       display:inline-flex;
       align-items:center;
       gap:10px;
+      font-family:Sora,Inter,ui-sans-serif,sans-serif;
       font-weight:900;
-      letter-spacing:-1.5px;
+      letter-spacing:2.5px;
       font-size:24px;
     }
+    .brand-mark img{width:36px;height:38px;padding:4px;border-radius:9px;background:#171914}
+    .brand-mark small{font-size:13px;letter-spacing:.5px;color:var(--muted)}
+    .login-brand .brand-mark small,.register-intro .brand-mark small{color:#aeb8bf}
     .brand-dot{
       width:14px;height:14px;border-radius:50%;background:var(--accent);
-      box-shadow:0 0 0 6px rgba(185,255,59,.12);
+      box-shadow:0 0 0 6px rgba(198,255,61,.12);
     }
     .hero-word{
       font-size:clamp(52px,7vw,92px);
@@ -100,7 +109,7 @@
       position:absolute;
       width:350px;height:350px;border-radius:50%;
       right:-120px;bottom:-120px;
-      border:52px solid rgba(185,255,59,.12);
+      border:52px solid rgba(198,255,61,.12);
     }
     .login-card{
       padding:34px;
@@ -127,20 +136,21 @@
     }
     .field input:focus,.field select:focus,.field textarea:focus{
       border-color:#9acb37;
-      box-shadow:0 0 0 4px rgba(185,255,59,.16)
+      box-shadow:0 0 0 4px rgba(198,255,61,.16)
     }
     .primary{
-      border:none;border-radius:16px;padding:14px 18px;
+      border:1px solid transparent;border-radius:9px;padding:14px 18px;
       background:var(--dark);color:white;font-weight:800;
       display:inline-flex;align-items:center;justify-content:center;gap:9px;
       transition:.2s;
     }
     .primary:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
-    .primary.accent{background:var(--accent);color:var(--accent-ink)}
+    .primary.accent{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+    .primary.accent:hover{background:#d4ff75}
     .secondary{
       border:1px solid var(--line);
       background:white;color:var(--ink);
-      border-radius:14px;padding:12px 15px;font-weight:750;
+      border-radius:9px;padding:12px 15px;font-weight:750;
       display:inline-flex;align-items:center;justify-content:center;gap:8px;
     }
     .login-note{
@@ -243,7 +253,7 @@
       display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;
       min-height:250px;
       background:
-        radial-gradient(circle at 80% 25%, rgba(185,255,59,.22), transparent 24%),
+        radial-gradient(circle at 80% 25%, rgba(198,255,61,.22), transparent 24%),
         linear-gradient(135deg,#0b0d0f,#141914);
       color:white;
     }
@@ -256,7 +266,7 @@
       display:grid;place-items:center;
       background:var(--accent);color:#101a00;
       font-size:28px;font-weight:950;transform:rotate(-7deg);
-      box-shadow:0 0 0 12px rgba(185,255,59,.08);
+      box-shadow:0 0 0 12px rgba(198,255,61,.08);
     }
 
     .timeline{display:grid;gap:10px;margin-top:14px}
@@ -343,7 +353,7 @@
     .event:before{
       content:"";position:absolute;inset:0;
       background:
-        radial-gradient(circle at 80% 20%, rgba(185,255,59,.42), transparent 24%),
+        radial-gradient(circle at 80% 20%, rgba(198,255,61,.42), transparent 24%),
         linear-gradient(180deg,transparent 15%,rgba(0,0,0,.85));
     }
     .event.blue:after,.event.couple:after,.event.sunset:after{
@@ -456,19 +466,20 @@
       .card{padding:17px;border-radius:20px}
     }
   </style>
+  <link rel="stylesheet" href="frontend/styles/mobile.css" />
 </head>
 <body>
   <div id="loginScreen" class="login-screen">
     <div class="login-wrap">
       <section class="login-brand">
-        <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+        <div class="brand-mark"><img src="frontend/app/assets/citra-symbol.svg" alt="" /> CITRA <small>FIT</small></div>
         <h1 class="hero-word">Seu esporte.<br>Seu ritmo.<br><em>Seu lifestyle.</em></h1>
         <p class="hero-sub">Uma experiência pessoal para transformar metas em rotina, evolução em conquista e esporte em parte da sua identidade.</p>
         <div class="orb"></div>
       </section>
 
       <section class="login-card">
-        <div class="brand-mark" style="color:#111;margin-bottom:32px"><span class="brand-dot"></span> RUN/LIFE</div>
+        <div class="brand-mark" style="color:#111;margin-bottom:32px"><img src="frontend/app/assets/citra-symbol.svg" alt="" /> CITRA <small>FIT</small></div>
         <h2>Bem-vindo de volta.</h2>
         <p>Entre para acompanhar seus treinos, metas e conquistas.</p>
 
@@ -492,7 +503,7 @@
   <div id="registerScreen" class="register-screen hidden" aria-hidden="true">
     <div class="register-shell">
       <section class="register-intro" aria-label="Apresentação do cadastro">
-        <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+        <div class="brand-mark"><img src="frontend/app/assets/citra-symbol.svg" alt="" /> CITRA <small>FIT</small></div>
         <div>
           <span class="register-kicker">COMECE SUA JORNADA</span>
           <h1>Seu próximo marco começa aqui.</h1>
@@ -527,12 +538,12 @@
           <div class="register-fields">
             <div class="field">
               <label for="registerPassword">Senha</label>
-              <input id="registerPassword" name="password" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" required minlength="8" />
+              <input id="registerPassword" name="password" type="password" autocomplete="new-password" placeholder="8+ caracteres, maiúscula e símbolo" required minlength="8" maxlength="72" />
               <small class="field-error" data-error-for="registerPassword"></small>
             </div>
             <div class="field">
               <label for="registerPasswordConfirm">Confirmar senha</label>
-              <input id="registerPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" placeholder="Repita sua senha" required minlength="8" />
+              <input id="registerPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" placeholder="Repita sua senha" required minlength="8" maxlength="72" />
               <small class="field-error" data-error-for="registerPasswordConfirm"></small>
             </div>
           </div>
@@ -550,7 +561,7 @@
 
   <div id="appShell" class="app-shell hidden">
     <aside class="sidebar">
-      <div class="brand-mark"><span class="brand-dot"></span> RUN/LIFE</div>
+      <div class="brand-mark"><img src="frontend/app/assets/citra-symbol.svg" alt="" /> CITRA <small>FIT</small></div>
       <nav class="nav" id="sideNav"></nav>
       <div class="sidebar-bottom">
         <div class="mini-profile">
@@ -680,7 +691,7 @@
       sideNav.appendChild(b);
     });
 
-    const mobileKeys=["home","treinos","progresso","eventos","perfil"];
+    const mobileKeys=Object.keys(pages);
     const mobileNav=document.getElementById("mobileNav");
     mobileKeys.forEach(key=>{
       const p=pages[key];
@@ -689,6 +700,7 @@
       b.dataset.nav=key;
       b.innerHTML=svgIcon[key]+`<span>${p.label}</span>`;
       mobileNav.appendChild(b);
+      b.setAttribute("aria-label", p.label);
     });
 
     function navigate(page){

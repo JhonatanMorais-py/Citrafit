@@ -1,10 +1,9 @@
-import { readCookies } from "../../http/cookies.js";
+import { accessToken } from "../../http/session.js";
 import { getAuthenticatedUser, updateProfile } from "./profile-service.js";
 
 export async function updateProfileController(request, response, readJson, sendJson) {
   try {
-    const cookies = readCookies(request);
-    const user = await getAuthenticatedUser(cookies.rl_access_token);
+    const user = await getAuthenticatedUser(accessToken(request));
     if (!user) return sendJson(response, 401, { error: "Sessão inválida. Entre novamente." });
 
     const payload = await readJson(request);

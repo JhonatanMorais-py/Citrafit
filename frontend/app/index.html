@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111"><meta name="description" content="Explore o universo Citra Fit. Treinos, encontros e novas formas de viver o esporte. Preview do acesso antecipado.">
+  <title>Citra Fit — Seu próximo movimento</title>
+  <link rel="icon" href="assets/citra-symbol.svg" type="image/svg+xml"><link rel="stylesheet" href="vendor/leaflet/leaflet.css"><link rel="stylesheet" href="style.css">
+  <style>html.auth-pending body{visibility:hidden}</style>
+  <script>document.documentElement.classList.add('auth-pending')</script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('citra-theme')||'light'}catch{}</script>
+</head>
+<body>
+ <a class="skip" href="#main">Pular para o conteúdo</a>
+ <aside class="sidebar">
+  <a class="brand" href="#inicio" aria-label="Citra Fit, início"><img src="assets/citra-symbol.svg" alt=""><span>CITRA<span class="brand-fit">FIT</span></span></a>
+  <span class="preview-label">EARLY ACCESS / 01</span>
+  <nav aria-label="Navegação principal" id="desktop-nav"></nav>
+  <div class="sidebar-bottom"><div class="member"><span class="member-avatar" data-user-initials>CF</span><div><strong data-user-name>Carregando</strong><span data-user-email></span></div></div></div>
+ </aside>
+ <div class="workspace">
+  <header class="topbar"><a href="#inicio" class="mobile-brand brand"><img src="assets/citra-symbol.svg" alt=""><span>CITRA<span class="brand-fit">FIT</span></span></a><div class="breadcrumb">CITRA FIT <span>/</span> <strong id="breadcrumb">Seu espaço</strong></div><div class="top-controls"><a href="#lancamento" class="launch-link"><i data-icon="clock"></i><span>O próximo capítulo</span></a><button class="icon-button" id="theme-toggle" aria-label="Alternar tema"></button><a href="#mais" class="profile-link" aria-label="Abrir seu espaço"><i data-icon="user"></i></a></div></header>
+  <main id="main" tabindex="-1"></main>
+  <footer class="footer"><span>CITRA FIT <span class="footer-divider">/</span> SUA MELHOR VERSÃO, EM MOVIMENTO.</span><span>Preview • Recursos em desenvolvimento</span></footer>
+ </div>
+ <nav class="bottom-nav" id="mobile-nav" aria-label="Navegação no celular"></nav>
+ <dialog id="detail-dialog"><button class="dialog-close icon-button" aria-label="Fechar"><i data-icon="close"></i></button><div id="dialog-content"></div></dialog>
+  <script src="../config/runtime.js"></script><!-- native-app-bootstrap --><script src="../core/api.js"></script><script src="vendor/leaflet/leaflet.js"></script><script src="app.js"></script><script src="session.js"></script>
+</body>
+</html>
